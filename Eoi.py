@@ -5,7 +5,7 @@ from schedule import *
 import schedparser
 
 
-class RoosterCatalog:
+class EoiCatalog:
 	_tables = []
 
 	def __getattr__(self,name):
