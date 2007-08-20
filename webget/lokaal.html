@@ -1,0 +1,113 @@
+<html><head>
+
+	
+
+		<script language="JavaScript" type="text/JavaScript" src="lokaal%20Bestanden/form.js"></script>
+		<script language="JavaScript" type="text/JavaScript" src="lokaal%20Bestanden/filter.js"></script>
+		<script language="JavaScript" type="text/JavaScript" src="lokaal%20Bestanden/cookie.js"></script></head><body background="lokaal%20Bestanden/achtergrond-welkom.jpg">
+
+	<!-- Start for Scientia Include --->
+
+		<table border="0" width="100%">
+
+			<tbody><tr>
+				<td> </td>
+			</tr>
+
+			<tr>
+				<td align="center" valign="middle">
+
+					<table bgcolor="#ffffff" cellpadding="20" cellspacing="0" height="100%">
+						<tbody><tr valign="top">
+							<td>
+
+								<h2 style="font-family: arial;">Lokaalrooster</h2>
+
+								<form target="_top" name="swsform" method="post" action="../common/get_timetable.php">
+
+								<font color="#000000" face="Arial, Helvetica, sans-serif" size="2">
+									<strong>Kies lokaal:</strong>
+								</font>
+
+								<br>
+
+								<select style="width: 500px;" name="identifier[]" size="6" multiple="yes" onchange="SaveMenuSelections(swsform,'location');">
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+								<option value="%23SPLUSAFC63D"></option><option value="%23SPLUSAFC646"></option><option value="%23SPLUS33C0B9">A002</option><option value="%23SPLUS33C0BA">A003</option><option value="%23SPLUS33C0BB">A004</option><option value="%23SPLUS33C0BC">A005</option><option value="%23SPLUS13FC64">A009</option><option value="%23SPLUS13FC65">A010</option><option value="%23SPLUS13FC66">A011</option><option value="%23SPLUS33C0BD">A014</option><option value="%23SPLUS33C0BE">A015</option><option value="%23SPLUS33C0BF">A017</option><option value="%23SPLUS33C0C0">A018</option><option value="%23SPLUS33C0C1">A019</option><option value="%23SPLUS13FC69">A021</option><option value="%23SPLUS13FC67">A022</option><option value="%23SPLUS13FC68">A023</option><option value="%23SPLUS13FC56">A102</option><option value="%23SPLUS13FC57">A103</option><option value="%23SPLUS13FC58">A104</option><option value="%23SPLUS33C0DD">A110</option><option value="%23SPLUS33C0DE">A111</option><option value="%23SPLUS13FC59">A113</option><option value="%23SPLUS33C0DF">A116</option><option value="%23SPLUS13FC5A">A117</option><option value="%23SPLUS13FC5B">A118</option><option value="%23SPLUS13FC73">A202</option><option value="%23SPLUS13FC74">A203</option><option value="%23SPLUS13FC6A">A208</option><option value="%23SPLUS13FC6B">A209</option><option value="%23SPLUS13FC75">A213</option><option value="%23SPLUS13FC76">A217</option><option value="%23SPLUS13FC6C">C006</option><option value="%23SPLUS13FC6D">C014</option><option value="%23SPLUS13FC6E">C015</option><option value="%23SPLUS13FC6F">C017</option><option value="%23SPLUS13FC70">C018</option><option value="%23SPLUS13FC71">C019</option><option value="%23SPLUS13FC72">C106</option><option value="%23SPLUS13FC7E">C208</option><option value="%23SPLUS33C0E0">D004</option><option value="%23SPLUS7E4FBA">D006</option><option value="%23SPLUS33C0E1">D007</option><option value="%23SPLUS33C0E2">D008</option><option value="%23SPLUS33C0E3">D011</option><option value="%23SPLUS33C0E4">D012</option><option value="%23SPLUS33C0E5">D013</option><option value="%23SPLUS13FC77">D016</option><option value="%23SPLUS13FC78">D018</option><option value="%23SPLUS13FC63">D019</option><option value="%23SPLUS1A8571">F002</option><option value="%23SPLUS1A8572">F010</option><option value="%23SPLUSAC419F">F015</option><option value="%23SPLUS33C0C2">F109</option><option value="%23SPLUS33C0C3">F110</option><option value="%23SPLUS33C0C4">F113</option><option value="%23SPLUS33C0C5">F114</option><option value="%23SPLUS13FC7A">G117</option><option value="%23SPLUS13FC7B">G120</option><option value="%23SPLUS13FC79">H1.06</option><option value="%23SPLUS33C0CD">K103</option><option value="%23SPLUS33C0CC">K104</option><option value="%23SPLUS33C0C6">K107</option><option value="%23SPLUS33C0C7">K108</option><option value="%23SPLUS33C0C8">K111</option><option value="%23SPLUS33C0C9">K112</option><option value="%23SPLUS33C0CA">K113</option><option value="%23SPLUS33C0CB">K114</option><option value="%23SPLUS13FC7C">K204</option><option value="%23SPLUS13FC7D">K206</option><option value="%23SPLUS33C0CE">N001</option><option value="%23SPLUS33C0CF">N002</option><option value="%23SPLUS13FC5C">N003</option><option value="%23SPLUS13FC5D">N004</option><option value="%23SPLUS13FC5E">N008</option><option value="%23SPLUS13FC5F">N009</option><option value="%23SPLUS13FC60">N010</option><option value="%23SPLUS13FC61">N011</option><option value="%23SPLUS13FC62">N103</option></select>
+
+								<br>
+
+								<font color="#000000" face="Arial, Helvetica, sans-serif" size="2">
+									<strong>Kies week/periode:</strong>
+								</font>
+
+								<br>
+
+								<select style="width: 500px;" name="weeks" onchange="SaveMenuSelections(swsform,'location');">
+									
+									
+									
+									
+								<option value="">deze week</option><option value="1-14">1° semester</option><option value="22-36">2° semester</option><option value="1">week 1 - 18/09/06</option><option value="2">week 2 - 25/09/06</option><option value="3">week 3 - 02/10/06</option><option value="4">week 4 - 09/10/06</option><option value="5">week 5 - 16/10/06</option><option value="6">week 6 - 23/10/06</option><option value="7">week 7 - 30/10/06</option><option value="8">week 8 - 06/11/06</option><option value="9">week 9 - 13/11/06</option><option value="10">week 10 - 20/11/06</option><option value="11">week 11 - 27/11/06</option><option value="12">week 12 - 04/12/06</option><option value="13">week 13 - 11/12/06</option><option value="14">week 14 - 18/12/06</option><option value="15">week 15 - 25/12/06</option><option value="16">week 16 - 01/01/07</option><option value="17">week 17 - 08/01/07</option><option value="18">week 18 - 15/01/07</option><option value="19">week 19 - 22/01/07</option><option value="20">week 20 - 29/01/07</option><option value="21">week 21 - 05/02/07</option><option value="22">week 22 - 12/02/07</option><option value="23">week 23 - 19/02/07</option><option value="24">week 24 - 26/02/07</option><option value="25">week 25 - 05/03/07</option><option value="26">week 26 - 12/03/07</option><option value="27">week 27 - 19/03/07</option><option value="28">week 28 - 26/03/07</option><option value="29">week 29 - 02/04/07</option><option value="30">week 30 - 09/04/07</option><option value="31">week 31 - 16/04/07</option><option value="32">week 32 - 23/04/07</option><option value="33">week 33 - 30/04/07</option><option value="34">week 34 - 07/05/07</option><option value="35">week 35 - 14/05/07</option><option value="36">week 36 - 21/05/07</option><option value="37">week 37 - 28/05/07</option><option value="38">week 38 - 04/06/07</option><option value="39">week 39 - 11/06/07</option><option value="40">week 40 - 18/06/07</option><option value="41">week 41 - 25/06/07</option><option value="42">week 42 - 02/07/07</option><option value="43">week 43 - 09/07/07</option><option value="44">week 44 - 16/07/07</option><option value="45">week 45 - 23/07/07</option><option value="46">week 46 - 30/07/07</option><option value="47">week 47 - 06/08/07</option><option value="48">week 48 - 13/08/07</option><option value="49">week 49 - 20/08/07</option><option value="50">week 50 - 27/08/07</option><option value="51">week 51 - 03/09/07</option><option value="52">week 52 - 10/09/07</option></select>
+
+								<br>
+
+								<select style="visibility: hidden;" name="filter" onchange="FilterRooms(swsform);SaveMenuSelections(swsform,'location')">
+									<option value="(None)">Kies</option>
+								<option value="BMF - Architectuur Brussel">BMF - Architectuur Brussel</option><option value="BMF - Architectuur Gent">BMF - Architectuur Gent</option><option value="BMF - Beeldende Kunst">BMF - Beeldende Kunst</option><option value="Beeldende Kunst Gent">Beeldende Kunst Gent</option><option value="De Nayer Instituut">De Nayer Instituut</option><option value="Sint-Lucas Brussel">Sint-Lucas Brussel</option><option value="Sint-Lucas Gent">Sint-Lucas Gent</option></select>
+
+								<br>
+
+								<!-- Change following line to pass the Syllabus Plus object as parameter, e.g. Module, Student+Set, Student+Set+Group, etc... -->
+								<input style="width: 500px;" value="bekijk rooster" type="submit">
+
+								<input name="objectclass" value="location" type="hidden">
+								<input name="idtype" value="id" type="hidden">
+								<input name="periods" value="1-56" type="hidden">
+								<input name="days" value="1-6" type="hidden">
+								<input name="template" value="DN+Zaal+individueel" type="hidden">
+
+								<p align="center">
+
+
+								<font color="#000000" face="Arial, Helvetica, sans-serif" size="1">
+
+								<a href="http://sws.wenk.be/Technologie/studentset.php">Studenten</a>
+								 | 
+								<a href="http://sws.wenk.be/Technologie/staff.php">Docenten</a>
+								 | 
+								<a href="http://sws.wenk.be/Technologie/room.php">Lokalen</a>
+
+								</font>
+
+								
+							</p></form></td>
+						</tr>
+					</tbody></table>
+				</td>
+			</tr>
+		</tbody></table>
+
+
+		<script language="Javascript" type="text/javascript">
+
+			PopulateFilter("Zone", document.swsform.elements["filter"]);
+
+			// Change following line to FilterModules, FilterStudentSets, FilterStudentSetGroups, etc...
+			AddWeeksToHTML(document.swsform);
+			SetMenuSelections(document.swsform, 'location');
+
+		</script>
+
+	</body></html>

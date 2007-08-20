@@ -1,0 +1,112 @@
+<html><head>
+
+	
+
+		<script language="JavaScript" type="text/JavaScript" src="docent%20Bestanden/form.js"></script>
+		<script language="JavaScript" type="text/JavaScript" src="docent%20Bestanden/filter.js"></script>
+		<script language="JavaScript" type="text/JavaScript" src="docent%20Bestanden/cookie.js"></script></head><body background="docent%20Bestanden/achtergrond-welkom.jpg">
+
+	<!-- Start for Scientia Include --->
+
+		<table border="0" width="100%">
+
+			<tbody><tr>
+				<td> </td>
+			</tr>
+
+			<tr>
+				<td align="center" valign="middle">
+
+					<table bgcolor="#ffffff" cellpadding="20" cellspacing="0" height="100%">
+						<tbody><tr valign="top">
+							<td>
+
+								<h2 style="font-family: arial;">Docentrooster</h2>
+
+								<form target="_top" name="swsform" method="post" action="../common/get_timetable.php">
+
+								<font color="#000000" face="Arial, Helvetica, sans-serif" size="2">
+									<strong>Kies docent:</strong>
+								</font>
+
+								<br>
+
+								<select style="width: 500px;" name="identifier[]" size="6" multiple="yes" onchange="SaveMenuSelections(swsform,'staff');">
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+								<option value="15809300476">BAUWENS Jimmy</option><option value="15211060353">BEHAEGELS Hubert</option><option value="15205090813">BERT Hugo</option><option value="16601210294">CEUPPENS Marc</option><option value="16007250295">CLAESSENS Luc</option><option value="15708010955">CUYKENS Benjamin</option><option value="16211100950">DAEMEN Christian</option><option value="18110270923">DAMS Wim</option><option value="16211040427">DE COSTER Johan</option><option value="15710210431">DE JONGE Joseph</option><option value="16708170376">DE NIES Geert</option><option value="15803130771">DE VOS Dirk</option><option value="17710190379">DEKETELAERE Wouter</option><option value="17709260593">DENEVE Kjell</option><option value="16704050102">DERUA Jan</option><option value="24812043561">DICTUS Denise</option><option value="%23SPLUS1A8573">Gastprof.. T.</option><option value="16512280492">JACOBS Marc</option><option value="26507311147">JANSEN Hilde</option><option value="%23SPLUS356543">JONKERS Bart</option><option value="%23SPLUS9411D6">MAES Johan</option><option value="16308030222">MOYSON Koen</option><option value="16401040589">PELGRIMS Patrick</option><option value="%23SPLUSCEF804">PIRARD Hilde</option><option value="16201270608">ROGGEMANS Marc</option><option value="%23SPLUSCEF805">SCHEERS Ella</option><option value="15601200922">STROOBANTS Willy</option><option value="15207310695">SYMONS Paul</option><option value="%23SPLUS761EDF">TIERENS Tom</option><option value="15304211271">TWEEPENNINCKX Georges</option><option value="15212251029">VAN ELEWYCK Jan</option><option value="15508080922">VAN LOON Leonardus</option><option value="15305250686">VAN MALDEREN Marc</option><option value="%23SPLUS7E3B6B">VAN PELT Pihilip</option><option value="15603290765">VAN POECK Jan</option><option value="15011220650">VAN ROSSUM Luc</option><option value="15512240505">VAN WESEMAEL Eric</option><option value="15909230886">VERELST Jan</option><option value="15302070201">VERSTRAETEN Julien</option><option value="15505140408">WINDERICKX Marc</option></select>
+
+								<br>
+
+								<font color="#000000" face="Arial, Helvetica, sans-serif" size="2">
+									<strong>Kies week/periode:</strong>
+								</font>
+
+								<br>
+
+								<select style="width: 500px;" name="weeks" onchange="SaveMenuSelections(swsform,'staff');">
+									
+									
+									
+									
+								<option value="">deze week</option><option value="1-14">1° semester</option><option value="22-36">2° semester</option><option value="1">week 1 - 18/09/06</option><option value="2">week 2 - 25/09/06</option><option value="3">week 3 - 02/10/06</option><option value="4">week 4 - 09/10/06</option><option value="5">week 5 - 16/10/06</option><option value="6">week 6 - 23/10/06</option><option value="7">week 7 - 30/10/06</option><option value="8">week 8 - 06/11/06</option><option value="9">week 9 - 13/11/06</option><option value="10">week 10 - 20/11/06</option><option value="11">week 11 - 27/11/06</option><option value="12">week 12 - 04/12/06</option><option value="13">week 13 - 11/12/06</option><option value="14">week 14 - 18/12/06</option><option value="15">week 15 - 25/12/06</option><option value="16">week 16 - 01/01/07</option><option value="17">week 17 - 08/01/07</option><option value="18">week 18 - 15/01/07</option><option value="19">week 19 - 22/01/07</option><option value="20">week 20 - 29/01/07</option><option value="21">week 21 - 05/02/07</option><option value="22">week 22 - 12/02/07</option><option value="23">week 23 - 19/02/07</option><option value="24">week 24 - 26/02/07</option><option value="25">week 25 - 05/03/07</option><option value="26">week 26 - 12/03/07</option><option value="27">week 27 - 19/03/07</option><option value="28">week 28 - 26/03/07</option><option value="29">week 29 - 02/04/07</option><option value="30">week 30 - 09/04/07</option><option value="31">week 31 - 16/04/07</option><option value="32">week 32 - 23/04/07</option><option value="33">week 33 - 30/04/07</option><option value="34">week 34 - 07/05/07</option><option value="35">week 35 - 14/05/07</option><option value="36">week 36 - 21/05/07</option><option value="37">week 37 - 28/05/07</option><option value="38">week 38 - 04/06/07</option><option value="39">week 39 - 11/06/07</option><option value="40">week 40 - 18/06/07</option><option value="41">week 41 - 25/06/07</option><option value="42">week 42 - 02/07/07</option><option value="43">week 43 - 09/07/07</option><option value="44">week 44 - 16/07/07</option><option value="45">week 45 - 23/07/07</option><option value="46">week 46 - 30/07/07</option><option value="47">week 47 - 06/08/07</option><option value="48">week 48 - 13/08/07</option><option value="49">week 49 - 20/08/07</option><option value="50">week 50 - 27/08/07</option><option value="51">week 51 - 03/09/07</option><option value="52">week 52 - 10/09/07</option></select>
+
+								<br>
+
+								<select style="visibility: hidden;" name="filter" onchange="FilterStaff(swsform);SaveMenuSelections(swsform,'staff')">
+									<option value="Technologie">Departement Technologie</option>
+								</select>
+
+								<br>
+
+								<input style="width: 500px;" value="bekijk rooster" type="submit">
+
+								<input name="objectclass" value="staff" type="hidden">
+								<input name="idtype" value="id" type="hidden">
+								<input name="periods" value="1-56" type="hidden">
+								<input name="days" value="1-6" type="hidden">
+								<input name="template" value="DN+Docent+individueel" type="hidden">
+
+								<p align="center">
+
+								<font color="#000000" face="Arial, Helvetica, sans-serif" size="1">
+
+								<a href="http://sws.wenk.be/Technologie/studentset.php">Studenten</a>
+								 | 
+								<a href="http://sws.wenk.be/Technologie/staff.php">Docenten</a>
+								 | 
+								<a href="http://sws.wenk.be/Technologie/room.php">Lokalen</a>
+
+								</font>
+
+
+								
+							</p></form></td>
+						</tr>
+					</tbody></table>
+				</td>
+			</tr>
+		</tbody></table>
+
+
+		<script language="Javascript" type="text/javascript">
+
+			PopulateFilter("DeptIdentifier", document.swsform.elements["filter"]);
+
+			// Change following line to FilterModules, FilterStudentSets, FilterStudentSetGroups, etc...
+			AddWeeksToHTML(document.swsform);
+			SetMenuSelections(document.swsform, 'staff');
+
+		</script>
+
+	</body></html>

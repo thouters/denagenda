@@ -1,0 +1,116 @@
+<html><head>
+
+	
+
+		<script language="JavaScript" type="text/JavaScript" src="studentset%20Bestanden/form.js"></script>
+		<script language="JavaScript" type="text/JavaScript" src="studentset%20Bestanden/filter.js"></script>
+		<script language="JavaScript" type="text/JavaScript" src="studentset%20Bestanden/cookie.js"></script></head><body background="studentset%20Bestanden/achtergrond-welkom.jpg">
+
+	<!-- Start for Scientia Include --->
+
+		<table border="0" width="100%">
+
+			<tbody><tr>
+				<td> </td>
+			</tr>
+
+			<tr>
+				<td align="center" valign="middle">
+
+					<table bgcolor="#ffffff" cellpadding="20" cellspacing="0" height="100%">
+						<tbody><tr valign="top">
+							<td>
+
+								<h2 style="font-family: arial;">Studentenrooster</h2>
+
+								<form target="_top" name="swsform" method="post" action="../common/get_timetable.php">
+
+
+								<font color="#000000" face="Arial, Helvetica, sans-serif" size="2">
+									<strong>Kies uw opleiding:</strong>
+								</font>
+
+								<br>
+
+								<select style="width: 500px;" name="filter" onchange="FilterStudentSets(swsform);SaveMenuSelections(swsform,'student+set')">
+									<option value="(None)">Kies</option>
+								<option value="1PBAT">1PBAT</option><option value="1PBEI">1PBEI</option><option value="1PBEIE">1PBEIE</option><option value="1PBEII">1PBEII</option><option value="1PBEM/MP">1PBEM/MP</option><option value="2PBAT">2PBAT</option><option value="2PBEIE">2PBEIE</option><option value="2PBEII">2PBEII</option><option value="2PBEM">2PBEM</option><option value="2PBMP">2PBMP</option><option value="3PBAT">3PBAT</option><option value="3PBEIE">3PBEIE</option><option value="3PBEII">3PBEII</option><option value="3PBEMA">3PBEMA</option><option value="3PBEMK">3PBEMK</option><option value="3PBEMO">3PBEMO</option><option value="3PBMP">3PBMP</option></select>
+
+								<br>
+
+								<font color="#000000" face="Arial, Helvetica, sans-serif" size="2">
+									<strong>Kies uw groep:</strong>
+								</font>
+
+								<br>
+
+								<select style="width: 500px;" name="identifier[]" size="6" multiple="yes" onchange="SaveMenuSelections(swsform,'student+set');">
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+									
+								<option value="%23SPLUSE639F3">1PBAT1</option><option value="%23SPLUSE639F4">1PBAT2</option><option value="%23SPLUSE639F5">1PBAT3</option><option value="%23SPLUSE639F6">1PBAT4</option><option value="%23SPLUSE639F7">1PBAT5</option><option value="%23SPLUSE639F8">1PBAT6</option><option value="%23SPLUS0FC145">1PBEI1</option><option value="%23SPLUS0FC147">1PBEI2</option><option value="%23SPLUS0FC146">1PBEI3</option><option value="%23SPLUS0FC14B">1PBEI4</option><option value="%23SPLUS97B8B3">1PBEIE1</option><option value="%23SPLUS97B8B4">1PBEIE2</option><option value="%23SPLUS97B8AF">1PBEII1</option><option value="%23SPLUS97B8B2">1PBEII2</option><option value="%23SPLUSE63A14">1PBEM/MP1</option><option value="%23SPLUSE63A15">1PBEM/MP2</option><option value="%23SPLUSE63A16">1PBEM/MP3</option><option value="%23SPLUSE63A17">1PBEM/MP4</option><option value="%23SPLUSE63A18">1PBEM/MP5</option><option value="%23SPLUSE63A19">1PBEM/MP6</option><option value="%23SPLUSE63A1A">1PBEM/MP7</option><option value="%23SPLUSE639F9">2PBAT1</option><option value="%23SPLUSE639FA">2PBAT2</option><option value="%23SPLUSE639FB">2PBAT3</option><option value="%23SPLUSE639FC">2PBAT4</option><option value="%23SPLUSE63A0F">2PBEIE1</option><option value="%23SPLUSE63A11">2PBEIE2</option><option value="%23SPLUSE63A12">2PBEIE3</option><option value="%23SPLUSE63A13">2PBEIE4</option><option value="%23SPLUSE63A03">2PBEII</option><option value="%23SPLUSE63A0A">2PBEM1</option><option value="%23SPLUSE63A0C">2PBEM2</option><option value="%23SPLUSE63A0D">2PBEM3</option><option value="%23SPLUSE63A0E">2PBEM4</option><option value="%23SPLUSE63A08">2PBMP</option><option value="%23SPLUSE639FD">3PBAT1</option><option value="%23SPLUSE639FE">3PBAT2</option><option value="%23SPLUSE639FF">3PBAT3</option><option value="%23SPLUSE63A04">3PBEIE1</option><option value="%23SPLUSE63A05">3PBEIE2</option><option value="%23SPLUSE63A06">3PBEII1</option><option value="%23SPLUSE63A07">3PBEII2</option><option value="%23SPLUSE63A00">3PBEMA</option><option value="%23SPLUSE63A01">3PBEMK</option><option value="%23SPLUSE63A02">3PBEMO</option><option value="%23SPLUSE63A09">3PBMP</option></select>
+
+								<br>
+
+								<font color="#000000" face="Arial, Helvetica, sans-serif" size="2">
+									<strong>Kies week/periode:</strong>
+								</font>
+
+								<br>
+
+								<select style="width: 500px;" name="weeks" onchange="SaveMenuSelections(swsform,'student+set');">
+									
+									
+									
+									
+								<option value="">deze week</option><option value="1-14">1° semester</option><option value="22-36">2° semester</option><option value="1">week 1 - 18/09/06</option><option value="2">week 2 - 25/09/06</option><option value="3">week 3 - 02/10/06</option><option value="4">week 4 - 09/10/06</option><option value="5">week 5 - 16/10/06</option><option value="6">week 6 - 23/10/06</option><option value="7">week 7 - 30/10/06</option><option value="8">week 8 - 06/11/06</option><option value="9">week 9 - 13/11/06</option><option value="10">week 10 - 20/11/06</option><option value="11">week 11 - 27/11/06</option><option value="12">week 12 - 04/12/06</option><option value="13">week 13 - 11/12/06</option><option value="14">week 14 - 18/12/06</option><option value="15">week 15 - 25/12/06</option><option value="16">week 16 - 01/01/07</option><option value="17">week 17 - 08/01/07</option><option value="18">week 18 - 15/01/07</option><option value="19">week 19 - 22/01/07</option><option value="20">week 20 - 29/01/07</option><option value="21">week 21 - 05/02/07</option><option value="22">week 22 - 12/02/07</option><option value="23">week 23 - 19/02/07</option><option value="24">week 24 - 26/02/07</option><option value="25">week 25 - 05/03/07</option><option value="26">week 26 - 12/03/07</option><option value="27">week 27 - 19/03/07</option><option value="28">week 28 - 26/03/07</option><option value="29">week 29 - 02/04/07</option><option value="30">week 30 - 09/04/07</option><option value="31">week 31 - 16/04/07</option><option value="32">week 32 - 23/04/07</option><option value="33">week 33 - 30/04/07</option><option value="34">week 34 - 07/05/07</option><option value="35">week 35 - 14/05/07</option><option value="36">week 36 - 21/05/07</option><option value="37">week 37 - 28/05/07</option><option value="38">week 38 - 04/06/07</option><option value="39">week 39 - 11/06/07</option><option value="40">week 40 - 18/06/07</option><option value="41">week 41 - 25/06/07</option><option value="42">week 42 - 02/07/07</option><option value="43">week 43 - 09/07/07</option><option value="44">week 44 - 16/07/07</option><option value="45">week 45 - 23/07/07</option><option value="46">week 46 - 30/07/07</option><option value="47">week 47 - 06/08/07</option><option value="48">week 48 - 13/08/07</option><option value="49">week 49 - 20/08/07</option><option value="50">week 50 - 27/08/07</option><option value="51">week 51 - 03/09/07</option><option value="52">week 52 - 10/09/07</option></select>
+
+								<br>
+
+								<input style="width: 500px;" value="bekijk rooster" type="submit">
+
+								<input name="objectclass" value="student+set" type="hidden">
+								<input name="idtype" value="id" type="hidden">
+								<input name="periods" value="1-40" type="hidden">
+								<input name="days" value="1-6" type="hidden">
+								<input name="template" value="DN+Studentenset+individueel" type="hidden">
+
+								<p align="center">
+
+								<font color="#000000" face="Arial, Helvetica, sans-serif" size="1">
+
+								<a href="http://sws.wenk.be/Technologie/studentset.php">Studenten</a>
+								 | 
+								<a href="http://sws.wenk.be/Technologie/staff.php">Docenten</a>
+								 | 
+								<a href="http://sws.wenk.be/Technologie/room.php">Lokalen</a>
+
+								</font>
+
+								
+							</p></form></td>
+						</tr>
+					</tbody></table>
+				</td>
+			</tr>
+		</tbody></table>
+
+
+		<script language="Javascript" type="text/javascript">
+
+			PopulateFilterWithProgrammes(document.swsform.elements["filter"]);
+			AddWeeksToHTML(document.swsform);
+			SetMenuSelections(document.swsform, 'student+set');
+
+		</script>
+
+	</body></html>

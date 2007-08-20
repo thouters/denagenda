@@ -1,0 +1,122 @@
+<html>
+
+	<head>
+
+		<script language="JavaScript" type="text/JavaScript" src="../common/form.js"></script>
+		<script language="JavaScript" type="text/JavaScript" src="js/filter.js"></script>
+		<script language="JavaScript" type="text/JavaScript" src="../common/cookie.js"></script>
+
+	</head>
+
+
+	<body background='http://www.wenk.be/beelden/achtergrond-welkom.jpg'>
+
+	<!-- Start for Scientia Include --->
+
+		<table width='100%' border='0'>
+
+			<tr>
+				<td>&nbsp;</td>
+			</tr>
+
+			<tr>
+				<td align='center' valign='middle'>
+
+					<table height="100%" cellspacing=0 cellpadding=20 bgcolor=#FFFFFF>
+						<tr valign=top>
+							<td>
+
+								<h2 style='font-family:arial;'>Studentenrooster</h2>
+
+								<form target='_top' name='swsform' method='post' action='../common/get_timetable.php'>
+
+
+								<font color="#000000" size="2" face="Arial, Helvetica, sans-serif">
+									<strong>Kies uw opleiding:</strong>
+								</font>
+
+								<br>
+
+								<select style='width:500px' name='filter' onChange="FilterStudentSets(swsform);SaveMenuSelections(swsform,'student+set')">
+									<option>......................................................................................</option>
+								</select>
+
+								<br>
+
+								<font color="#000000" size="2" face="Arial, Helvetica, sans-serif">
+									<strong>Kies uw groep:</strong>
+								</font>
+
+								<br>
+
+								<select style='width:500px' name='identifier[]' size='6' multiple='yes' onChange="SaveMenuSelections(swsform,'student+set');">
+									<option>......................................................................................</option>
+									<option>......................................................................................</option>
+									<option>......................................................................................</option>
+									<option>......................................................................................</option>
+									<option>......................................................................................</option>
+									<option>......................................................................................</option>
+									<option>......................................................................................</option>
+									<option>......................................................................................</option>
+									<option>......................................................................................</option>
+									<option>......................................................................................</option>
+									<option>......................................................................................</option>
+									<option>......................................................................................</option>
+								</select>
+
+								<br>
+
+								<font color="#000000" size="2" face="Arial, Helvetica, sans-serif">
+									<strong>Kies week/periode:</strong>
+								</font>
+
+								<br>
+
+								<select style='width:500px' name='weeks' onChange="SaveMenuSelections(swsform,'student+set');">
+									<option>......................................................................................</option>
+									<option>......................................................................................</option>
+									<option>......................................................................................</option>
+									<option>......................................................................................</option>
+								</select>
+
+								<br>
+
+<input style='width:500px' type='submit' value='bekijk rooster'>
+
+<input type='hidden' name='objectclass' value='student+set'>
+<input type='hidden' name='idtype' value='id'>
+<input type='hidden' name='periods' value='1-40'>
+<input type='hidden' name='days' value='1-6'>
+<input type='hidden' name='template' value='DN+Studentenset+individueel'>
+
+								<p align='center'>
+
+								<font color="#000000" size="1" face="Arial, Helvetica, sans-serif">
+
+								<a href='studentset.php'>Studenten</a>
+								&nbsp;|&nbsp;
+								<a href='staff.php'>Docenten</a>
+								&nbsp;|&nbsp;
+								<a href='room.php'>Lokalen</a>
+
+								</font>
+
+								</form>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+
+
+		<script language="Javascript" type="text/javascript">
+
+			PopulateFilterWithProgrammes(document.swsform.elements["filter"]);
+			AddWeeksToHTML(document.swsform);
+			SetMenuSelections(document.swsform, 'student+set');
+
+		</script>
+
+	</body>
+</html>
