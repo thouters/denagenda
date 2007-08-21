@@ -1,4 +1,12 @@
 
+class Eoi():
+	""" Entity Of Interest """
+	Name = None
+
+	def getSchedule(self):
+		pass
+	
+
 class Room(Eoi):
 	pass
 

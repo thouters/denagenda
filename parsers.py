@@ -52,6 +52,10 @@ class EoiCatalog:
 			for i in JSarrayToList(contents, 'studentsetarray', 3):
 				self._tables.append(Klas(i))
 
+class LectureListRequest
+	pass
+
+
 class LectureTableParser:
 	idtype='id'
 	days='1-6'
