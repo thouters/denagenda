@@ -1,0 +1,19 @@
+#!/usr/bin/python
+
+x = open('lessenrooster.txt')
+y = x.read()
+x.close()
+a = y.split('\n')[:-1]
+b = map(lambda x: x.split(','),a)
+c = map(lambda x: [x[0].split(';')]+x[1:],b)
+vakken = []
+for i in c:
+	weken = i[0]
+	print weken
+	if not i[6] in vakken:
+		vakken.append(i[6])
+		print i[6]
+	else:
+		print "DUP: ", i[6]
+
+print vakken
