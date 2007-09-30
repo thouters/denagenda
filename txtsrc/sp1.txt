@@ -7,7 +7,7 @@
 6,2,12.00,13.00,A117,fysica,G. Langie
 2;3;4;5;7;9;11;12;13,2,08.00,10.00,A102,oef wiskunde,R. Criegers
 10,2,08.00,10.00,A213,labo. wiskunde,R. Criegers
-1;2;3;4;5;7;8;9;10;11;12;13,2,10.30,11.30,A014,mechanica,J. Verheyden
+1;2;3;4;5;7;8;9;10;11;12;13,2,10.00,11.30,A014,mechanica,J. Verheyden
 1;2;3;4;7;8;9;10;11;12;13,2,11.30,12.30,A014,fysica,G. Langie
 1;2;3;4;5;7;8;9;10;11;13,2,13.30,15.00,A019,statistiek,G. De Samblanx
 12,2,13.30,15.00,A019,elektriciteit,J. Compeers

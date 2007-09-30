@@ -7,8 +7,8 @@ from datetime import datetime, timedelta, time
 
 class STP:
 	class KeyClass:
+		""" test implementation of table with no double values """
 		email = 'example@email.com'
-		""" a class """
 		_instances = set()
 		@classmethod
 		def unique(cls,name):
@@ -39,7 +39,6 @@ class STP:
 	class Lecture: pass
 	class Event: pass
 	Events = []
-
 	
 	def totime(t):
 		# format from ^hour.minute(.*)$ string
@@ -101,7 +100,6 @@ class STP:
 			self.Events.append(e)
 
 if __name__=="__main__":
-
 	s = STP('txtsrc/sp1.txt')
 	print ical.IcalFile(s)
 
