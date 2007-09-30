@@ -1,15 +1,10 @@
 from sqlobject import *
 import datetime
+from dncalendar import *
+from datetime import datetime, timedelta, time
 
 __connection__ = "sqlite:/:memory:"
 
-# Calculate first day of the current academic year.
-first = datetime.date.today().replace(month=9, day=1)
-# 1sept dit jaar reeds voorbij is, academiejaar begon vorig jaar
-if datetime.date.today() < first:
-	first= first.replace(year = first.year - 1)	
-# 3 weken na de eerste werkdag van september (FIXME)
-first = first + datetime.timedelta(days = 21 + 7 - first.weekday()) 
 
 class Klas(SQLObject):
 	name = StringCol()
@@ -51,10 +46,10 @@ class Lecture(SQLObject):
 		""" Update timestamps and mtime """
 		#FIXME, doe dit in toewijzing _set_mtime
 		#hash hier ook in verwerken???
-		self.mtime = datetime.datetime.now()
-		day = first + datetime.timedelta(days = (int(self.weekday) - 1), weeks = int(self.week) - 1)
-		self.dtstart = datetime.datetime.combine(day,datetime.time(self.begin/60,self.begin%60))
-		self.dtend = self.dtstart + datetime.timedelta(minutes = self.span)
+		self.mtime = datetime.now()
+		self.dtstart = datetime.combine(	WD2Date(self.week, self.weekday),
+											time(self.begin / 60, self.begin % 60)	)
+		self.dtend = self.dtstart + timedelta(minutes = self.span)
 
 	# iCal-glue code
 	def _get_description(self):
