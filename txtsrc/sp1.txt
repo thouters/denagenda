@@ -1,6 +1,6 @@
 2;4;7;9;11;13,1,10.30,12.30,K113,oef bouwkunde,W. Busschots
 3;5;8;10;12,1,10.30,12.30,K113,oef chemie,G. Cammaert
-2;3;4;5;7;8;9;10;11;12;13,1,13.30,15.00,A015,oef mechanica,J. Dillien
+2;3;4;5;7;8;9;10;11;12;13,1,13.30,15.30,A015,oef mechanica,J. Dillien
 9;11;13,1,16.00,15.30,D019,labo fysica,J. Verheyden
 6,2,08.30,10.30,A015,oef mechanica,R. Criegers
 6,2,10.30,12.00,A002,oef elektriciteit,J. Compeers

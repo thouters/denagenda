@@ -102,5 +102,3 @@ class STP:
 if __name__=="__main__":
 	s = STP('txtsrc/sp1.txt')
 	print ical.IcalFile(s)
-
-
