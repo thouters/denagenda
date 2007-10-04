@@ -40,17 +40,14 @@ class STP:
 	class Event: pass
 	Events = []
 	
-	def totime(t):
-		# format from ^hour.minute(.*)$ string
-		return time(*map(int,t.split('.')[:2]))
 	
 	linelayout = (	# chop list of weeks separated by ';', convert to int
-					('weeks',	lambda x: map(int,x.split(';'))),
+					('weeks',	WeekNotation2Array)),
 					# weeknumber is an integer
 					('weekday',	int),
 					# conventional time notation to time object
-					('start',totime),
-					('end',totime),
+					('start',HourDotMinute2Time),
+					('end',HourDotMinute2Time),
 					# one-to-many relations
 					('room',Room.unique),
 					('course',Course.unique),
@@ -72,7 +69,7 @@ class STP:
 		# split string into lines (discard 'line' between last \n and EOF)
 		lines = sContents.split('\n')[:-1]
 		# chop each line on comma's
-		clines = map(lambda x: x.split(','),lines)
+		clines = map(lambda x: x.split(';'),lines)
 		# process each line with ProcessLine	
 		self.lectures = []
 		self.lectures = map(self.ProcessLine,clines)

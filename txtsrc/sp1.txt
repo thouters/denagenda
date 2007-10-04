@@ -1,35 +1,35 @@
-2;4;7;9;11;13,1,10.30,12.30,K113,oef bouwkunde,W. Busschots
-3;5;8;10;12,1,10.30,12.30,K113,oef chemie,G. Cammaert
-2;3;4;5;7;8;9;10;11;12;13,1,13.30,15.30,A015,oef mechanica,J. Dillien
-9;11;13,1,16.00,15.30,D019,labo fysica,J. Verheyden
-6,2,08.30,10.30,A015,oef mechanica,R. Criegers
-6,2,10.30,12.00,A002,oef elektriciteit,J. Compeers
-6,2,12.00,13.00,A117,fysica,G. Langie
-2;3;4;5;7;9;11;12;13,2,08.00,10.00,A102,oef wiskunde,R. Criegers
-10,2,08.00,10.00,A213,labo. wiskunde,R. Criegers
-1;2;3;4;5;7;8;9;10;11;12;13,2,10.00,11.30,A014,mechanica,J. Verheyden
-1;2;3;4;7;8;9;10;11;12;13,2,11.30,12.30,A014,fysica,G. Langie
-1;2;3;4;5;7;8;9;10;11;13,2,13.30,15.00,A019,statistiek,G. De Samblanx
-12,2,13.30,15.00,A019,elektriciteit,J. Compeers
-3;7;8;10;13,2,15.00,17.00,A014,oef bouwkunde,W. Busschots
-2;5,2,15.00,18.00,D019,labo fysica,J. Verheyden
-9;11;13,3,08.00,10.00,A110,labo elektriciteit,M. Schepers
-2;3;4;7;8;9;10;11;12;13,3,10.30,12.00,K108,oef elektriciteit,J. Compeers
-1;2;3;4;5;7;8;9;10;11;14,3,13.00,14.30,A019,elektriciteit,J. Compeers
-1;2;3;4;5;7;8;9;10;11;12;13,3,14.30,16.00,A019,wiskunde,G. De Samblanx
-8;10;12,3,08.30,10.30,A015,oef fysica,J. Mangelschots
-5,3,09.00,10.30,A004,oef elektriciteit,J. Compeers
-5,3,10.30,12.00,A017,fysica,G. Langie
-12,3,13.00,14.30,A019,statistiek,G. De Samblanx
-5;11,4,11.30,13.00,A113,bouwkunde,A. Van Gysel
-5,4,14.00,16.00,A203,labo wiskunde,R. Criegers
-1;3;5;8;10;12,4,08.00,10.00,D107,labo chemie,A. Van Assche
-1;2;3;4;5;7;8;9;10;11;12;13,4,10.00,11.30,A014,wiskunde,G. De Samblanx
-1;2;3;4;7;8;9;10;12;13,4,11.30,13.00,A014,chemie,S. Liers
-8,4,14.00,16.00,A005,oef wiskunde,R. Criegers
-5;8;10;12,5,08.00,09.30,A003,oef statistiek,R. Criegers
-1;2;3;4;7;8;9;10;12;13,5,09.30,11.00,A117,bouwkunde,A. Van Gysel
-5;11,5,09.30,11.00,A117,chemie,S. Liers
-5,5,11.00,12.30,A002,oef bouwkunde,W. Busschots
-1;2;3;4;7;8;9;10;11;12;13,5,11.00,13.00,A117,fysica,G. Langie
-1,5,13.30,15.30,K107,oef chemie,G. Cammaert
+2,4,7,9,11,13;1;10:30;12:30;K113;oef bouwkunde;W. Busschots
+3,5,8,10,12;1;10:30;12:30;K113;oef chemie;G. Cammaert
+2,3,4,5,7,8,9,10,11,12,13;1;13:30;15:30;A015;oef mechanica;J. Dillien
+9,11,13;1;16:00;15:30;D019;labo fysica;J. Verheyden
+6;2;08:30;10:30;A015;oef mechanica;R. Criegers
+6;2;10:30;12:00;A002;oef elektriciteit;J. Compeers
+6;2;12:00;13:00;A117;fysica;G. Langie
+2,3,4,5,7,9,11,12,13;2;08:00;10:00;A102;oef wiskunde;R. Criegers
+10;2;08:00;10:00;A213;labo. wiskunde;R. Criegers
+1,2,3,4,5,7,8,9,10,11,12,13;2;10:00;11:30;A014;mechanica;J. Verheyden
+1,2,3,4,7,8,9,10,11,12,13;2;11:30;12:30;A014;fysica;G. Langie
+1,2,3,4,5,7,8,9,10,11,13;2;13:30;15:00;A019;statistiek;G. De Samblanx
+12;2;13:30;15:00;A019;elektriciteit;J. Compeers
+3,7,8,10,13;2;15:00;17:00;A014;oef bouwkunde;W. Busschots
+2,5;2;15:00;18:00;D019;labo fysica;J. Verheyden
+9,11,13;3;08:00;10:00;A110;labo elektriciteit;M. Schepers
+2,3,4,7,8,9,10,11,12,13;3;10:30;12:00;K108;oef elektriciteit;J. Compeers
+1,2,3,4,5,7,8,9,10,11,14;3;13:00;14:30;A019;elektriciteit;J. Compeers
+1,2,3,4,5,7,8,9,10,11,12,13;3;14:30;16:00;A019;wiskunde;G. De Samblanx
+8,10,12;3;08:30;10:30;A015;oef fysica;J. Mangelschots
+5;3;09:00;10:30;A004;oef elektriciteit;J. Compeers
+5;3;10:30;12:00;A017;fysica;G. Langie
+12;3;13:00;14:30;A019;statistiek;G. De Samblanx
+5,11;4;11:30;13:00;A113;bouwkunde;A. Van Gysel
+5;4;14:00;16:00;A203;labo wiskunde;R. Criegers
+1,3,5,8,10,12;4;08:00;10:00;D107;labo chemie;A. Van Assche
+1,2,3,4,5,7,8,9,10,11,12,13;4;10:00;11:30;A014;wiskunde;G. De Samblanx
+1,2,3,4,7,8,9,10,12,13;4;11:30;13:00;A014;chemie;S. Liers
+8;4;14:00;16:00;A005;oef wiskunde;R. Criegers
+5,8,10,12;5;08:00;09:30;A003;oef statistiek;R. Criegers
+1,2,3,4,7,8,9,10,12,13;5;09:30;11:00;A117;bouwkunde;A. Van Gysel
+5,11;5;09:30;11:00;A117;chemie;S. Liers
+5;5;11:00;12:30;A002;oef bouwkunde;W. Busschots
+1,2,3,4,7,8,9,10,11,12,13;5;11:00;12:30;A117;fysica;G. Langie
+1;5;13:30;15:30;K107;oef chemie;G. Cammaert
