@@ -11,18 +11,18 @@ class LinkClass:
 	_instances = set()
 	_refs = set()
 	def __repr__(self):
-		return "%s '%s'" % (self.__class__.__name__,self.name)
+		return "< %s %s >" % (	self.__class__.__name__, self.name)
 
 	def __iter__(self):
 		""" Iterate the list of objects that refer to this instance """
 		dead = set()
-		for ref in cls._refs:
+		for ref in self._refs:
 			obj = ref()
 			if obj is not None:
 				yield obj
 			else:
 				dead.add(ref)
-		cls._instances -= dead
+		self._refs -= dead
 
 	@classmethod
 	def link(cls,name,obj):
@@ -113,6 +113,10 @@ class TableParser:
 	def __init__(self,name,id):
 		self.name = name
 		self.id = id
+	def __iter__(self):
+		""" For now, iterate through lectures (FIX THIS) """
+		return iter(self.Lectures)
+
 	def getSource(self):
 		""" Fetch html table """
 		# FIXME: this code should be generic and able to retrieve
@@ -128,9 +132,6 @@ class TableParser:
 		self.source = remotefile.read()
 		remotefile.close()
 
-	def __iter__(self):
-		return iter(self.Lectures)
-
 	# Helper classes, to build relations between instances
 	# this will allow to do basic queries on classes(tables)
 	class Klas(LinkClass): pass
@@ -138,7 +139,7 @@ class TableParser:
 	class Professor(LinkClass): pass
 	class Room(LinkClass): pass
 	 
-	class Lecture(LinkClass):
+	class Lecture:
 		""" Helper class """
 		def __init__(self,klas,title,prof,room,start,duration,weekday,week):
 			self.klas = TableParser.Klas.link(unicode(klas),self)
@@ -150,8 +151,15 @@ class TableParser:
 			self.weekday = weekday
 			self.week = week
 		def __repr__(self):
-			return "<Lecture %s >" % " ".join(map(repr,[self.klas.name,self.course.name,self.professor.name,self.room.name,self.start,self.duration,self.weekday,self.week]))
-
+			return "< %s >" % " ".join(	[self.__class__.__name__] + 
+								map(repr,[	self.klas.name,
+											self.course.name,
+											self.professor.name,
+											self.room.name,
+											self.start,
+											self.duration,
+											self.weekday,
+											self.week	]	)	)
 	def Parse(self):
 		""" -ENOINSPIRATION"""
 		if self.source == None:
@@ -223,7 +231,8 @@ if __name__ == "__main__":
 	source.UpdateCandidates()
 	timetable = source.getTable('SP1')
 	timetable.Parse()
-	print "\n".join(map(repr,filter(lambda l: l.start==time(hour=8),timetable.Lectures)))
+	#print "\n".join(map(repr,filter(lambda l: l.start==time(hour=8),timetable.Lectures)))
+	print "\n".join(map(repr,timetable.Room.unique("A102")))
 	x = open('/home/thomas/test.ics','w')
 	x.write(ical.IcalFile(map(IcalGlue,timetable)).toString().encode('utf-8'))
 	x.close()
