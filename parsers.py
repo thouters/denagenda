@@ -1,21 +1,20 @@
 #!/usr/bin/python
 
-from dncalendar import *
-import weakref, urllib,re
-from BeautifulSoup import BeautifulSoup
 from datetime import datetime, timedelta, time
+from dncalendar import *
 import ical
+from BeautifulSoup import BeautifulSoup
+import weakref, urllib,re
 
 class LinkClass:
-	""" test implementation of table with no double values """
+	""" This class implements relational links between classes"""
 	_instances = set()
 	_refs = set()
-
 	def __repr__(self):
 		return "%s '%s'" % (self.__class__.__name__,self.name)
 
 	def __iter__(self):
-		""" iterate through referenced stuff """
+		""" Iterate the list of objects that refer to this instance """
 		dead = set()
 		for ref in cls._refs:
 			obj = ref()
@@ -33,6 +32,7 @@ class LinkClass:
 
 	@classmethod
 	def unique(cls,name):
+		"""Obtain a reference to an instance of this class, wth name==name  """
 		double = filter(lambda x: x.name == name,cls.getinstances())
 		if double:
 			return double[0]
@@ -54,14 +54,16 @@ class LinkClass:
 		cls._instances -= dead
 
 class WebsiteSource:
+	""" This class should be a repository you can ask for timetables """
 	tables = []	
 	def UpdateCandidates(self):
-		""" Download lists """
+		""" Build a list of timetables using data from sws.wenk.be """
 		departments = [('IW','iw'),('Technologie','tech')] #['ArchitectuurSLB','ArchitectuurSLG']
 		source = "http://sws.wenk.be/js/filter_%s.js"
 		weekentry = r"""^\s+AddWeeks\s*\(\s*"(\d+)"\s*,\s*\"()\"\s*,\s*form.elements\["weeks"\]\);\s*$"""
 
 		def JSarrayToList(source, varname, depth):
+			""" obtain a javascript array defined with js sourcecode """
 			ret = {}
 			# Obtain a list of array store operations
 			arrayentry = r"""%s\s*\[\s*(\d+)\s*\]\s*\[\s*(\d+)\s*\]\s*=\s*"(.*)"\s*;"""
@@ -80,7 +82,6 @@ class WebsiteSource:
 			return ret.values()
 
 		self.tables = []
-
 		for department in departments:
 			remotefile = urllib.urlopen(source % department[1])
 			contents = remotefile.read()
@@ -88,30 +89,27 @@ class WebsiteSource:
 			
 			for i in JSarrayToList(contents, 'roomarray', 3):
 				self.tables.append(RoomParser(*[i[0],i[2]]))
-
 			for i in JSarrayToList(contents, 'staffarray', 3):
 				self.tables.append(ProfessorParser(*[i[0],i[2]]))
-			
 			for i in JSarrayToList(contents, 'studentsetarray', 3):
 				self.tables.append(KlasParser(*[i[0],i[2]]))
 
-	def Update(self, what = None):
-		"""	Update the database with new data from the internet
-			@param what: instance of obj to update | list
-		"""
-		raise NotImplementedError
-	
 	def getTable(self,id):
+		""" return an iterator over lectures.
+			@id the name of the klas/prof/room """
 		if not self.tables:
 			self.UpdateCandidates()
-		return filter(lambda x: x.name == id, self.tables)[:-1]
-
+		x = filter(lambda x: x.name == id, self.tables)
+		if len(x):
+			return x[0]
+		else:
+			return None
 
 class TableParser:
-	idtype='id'
-	days='1-6'
+	""" Fetches, parses a timetable from the internet,
+		provides an iterator over events				"""
 	Lectures = []
-
+	source = None
 	def __init__(self,name,id):
 		self.name = name
 		self.id = id
@@ -135,7 +133,7 @@ class TableParser:
 		#f = open('./output.html','w')
 		#f.write(c)
 		#f.close()
-		return c
+		self.source = c
 
 	class Klas(LinkClass): pass
 	class Course(LinkClass): pass
@@ -147,10 +145,10 @@ class TableParser:
 
 	class Lecture(LinkClass):
 		def __init__(self,klas,title,prof,room,start,duration,weekday,week):
-			self.klas = TableParser.Klas.link(klas,self)
-			self.course = TableParser.Course.link(title,self)
-			self.professor = TableParser.Professor.link(prof,self)
-			self.room = TableParser.Room.link(room,self)
+			self.klas = TableParser.Klas.link(unicode(klas),self)
+			self.course = TableParser.Course.link(unicode(title),self)
+			self.professor = TableParser.Professor.link(unicode(prof),self)
+			self.room = TableParser.Room.link(unicode(room),self)
 			self.start = start
 			self.duration = duration
 			self.weekday = weekday
@@ -158,10 +156,12 @@ class TableParser:
 		def __repr__(self):
 			return "<Lecture %s >" % " ".join(map(repr,[self.klas.name,self.course.name,self.professor.name,self.room.name,self.start,self.duration,self.weekday,self.week]))
 
-	def Parse(self,what):
+	def Parse(self):
 		# find all timetables given and start work on them.
 		#<table class="header-2-args" border="0" cellspacing="0" width="100%">
-		soup = BeautifulSoup(what)
+		if self.source == None:
+			self.getSource()
+		soup = BeautifulSoup(self.source)
 		for ttheader in soup.html.body.findAll("table",{"class":"header-border-args"}):
 			colday = []
 			# HEADER - has some crucial data
@@ -184,20 +184,21 @@ class TableParser:
 			for i,col in enumerate(header.findAll('td',{'class':'col-label-one'})):
 				#iterate through spanning column headers
 				span = int(col['colspan'].strip())
-				colday.extend([i]*span)
+				colday.extend([i+1]*span)
+			print "colday= %s" %(repr(colday))
 			# colday should now be like [0,0,0,1,1,2,3,3,3,3]
 			# TIMETABLE datarows
 			for row in header.findNextSiblings('tr'):
 				#first column contains start hour of the row
-				sh = row.find('td')
-				newsh = sh.string.strip()
+				hourcell = row.find('td',{'class':'row-label-one'})
+				newh = hourcell.string.strip()
 				# support for events starting at :15 and :45 
-				if newsh != '':
-					start = HourDotMinute2Time(newsh)
+				if newh != '':
+					start = HourDotMinute2Time(newh)
 				else:
 					start = start + timedelta(minutes=15)
 				# loop through columns, these can contain events starting at starthour
-				for colnum, column in enumerate(sh.findNextSiblings('td')):
+				for colnum, column in enumerate(hourcell.findNextSiblings('td')):
 					# check the cell for presence of a table
 					#<table class="object-cell-args" border="0" cellspacing="0" width="100%">
 					container = column.find('table',{'class':'object-cell-args'})
@@ -207,24 +208,21 @@ class TableParser:
 						weekday = colday[colnum]
 						# rowspan count represents blocks of 15 minutes
 						#<td class="object-cell-border" colspan="1" rowspan="12">
-						duration = timedelta(minutes= int(column['rowspan'].strip()) * 15)
+						duration = timedelta(minutes=int(column['rowspan']) * 30)
 						(title,weeks,room,prof) = map(lambda x: x.string.strip(), column.findAll('td'))
 						for week in WeekNotation2Array(weeks):
 							self.Lectures.append(self.Lecture(klas,title,prof,room,start,duration,weekday,week))
 
 class ProfessorParser(TableParser):
 	objectclass = "staff"
-	periods = "1-56"
 	template = "DN+Docent+individueel"
 	
 class RoomParser(TableParser):
 	objectclass = "room"
-	periods = "1-56"
 	template = "DN+Zaal+individueel"
 
 class KlasParser(TableParser):
 	objectclass = "student"
-	periods = "1-40"
 	template = "DN+Studentenset+individueel"
 
 def preptimes(x):
@@ -245,7 +243,13 @@ def preptimes(x):
 if __name__ == "__main__":
 	s = WebsiteSource()
 	s.UpdateCandidates()
-	p = filter(lambda x: x.name == 'SP1',s.tables)[0]
-	src = p.getSource()
-	p.Parse(src)
-	print ical.IcalFile(map(preptimes,p))
+	#print map(lambda x: x.name, s.tables)
+	#p = filter(lambda x: x.name == 'Ma EI2',s.tables)[0]
+	#p = filter(lambda x: x.name == 'SP1',s.tables)[0]
+	p = s.getTable('SP1')
+	p.getSource()
+	p.Parse()
+	print "\n".join(map(repr,filter(lambda x: x.start==time(hour=8),p.Lectures)))
+	x = open('/home/thomas/test.ics','w')
+	x.write(ical.IcalFile(map(preptimes,p)).toString().encode('utf-8'))
+	x.close()

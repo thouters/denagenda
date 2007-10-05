@@ -47,8 +47,10 @@ END:VEVENT
 		""" Link instance attributes to model """
 		for i in self.interface:
 			setattr(self,i,getattr(m,i))
-
 	def __repr__(self):
+		return self.toString()
+
+	def toString(self):
 		""" display text representation of instance attributes """
 		# verify all requirements are met
 		if None in [getattr(self, x,None) for x in self.interface]:
@@ -96,6 +98,9 @@ END:VTIMEZONE
 	def __init__(self,list = None):
 		self.list = list
 	def __repr__(self):
+		self.toString()
+
+	def toString(self):
 		if not self.list:
 			return "<Empty Ical File>"
 		out = "BEGIN:VCALENDAR\n"
@@ -103,7 +108,7 @@ END:VTIMEZONE
 		out += "VERSION:2.0\n"
 		out += "METHOD:REQUEST\n"
 		out += self.timezone
-		out += "".join(map(repr,map(IcalEvent,self.list)))
+		out += "".join(map(lambda x: x.toString(),map(IcalEvent,self.list)))
 		out += "END:VCALENDAR"
 		return out
 
