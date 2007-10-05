@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-from datetime import datetime, timedelta, time
 from dncalendar import *
+from datetime import datetime, date, timedelta, time
 import ical
 from BeautifulSoup import BeautifulSoup
 import weakref, urllib,re
@@ -114,12 +114,9 @@ class TableParser:
 		self.name = name
 		self.id = id
 	def getSource(self):
-		"""	Update the database with new data from the internet
-			@param what: instance of obj to update | list
-		"""
-		""" fetch and parse a table of given identifier and weeks
-			weeks for semesters: 1-14, 22-36	
-		"""
+		""" Fetch html table """
+		# FIXME: this code should be generic and able to retrieve
+		# any number of tables at once!!!
 		url= "http://sws.wenk.be/get_timetable.php"
 		getdict = {	"identifier[]": self.id, ##
 					"weeks":"1-13", ## dit is mogelijk fout!!!!
@@ -128,22 +125,21 @@ class TableParser:
 					"dept":"IW",
 		}
 		remotefile = urllib.urlopen(url,urllib.urlencode(getdict))
-		c = remotefile.read()
+		self.source = remotefile.read()
 		remotefile.close()
-		#f = open('./output.html','w')
-		#f.write(c)
-		#f.close()
-		self.source = c
-
-	class Klas(LinkClass): pass
-	class Course(LinkClass): pass
-	class Professor(LinkClass): pass
-	class Room(LinkClass): pass
 
 	def __iter__(self):
 		return iter(self.Lectures)
 
+	# Helper classes, to build relations between instances
+	# this will allow to do basic queries on classes(tables)
+	class Klas(LinkClass): pass
+	class Course(LinkClass): pass
+	class Professor(LinkClass): pass
+	class Room(LinkClass): pass
+	 
 	class Lecture(LinkClass):
+		""" Helper class """
 		def __init__(self,klas,title,prof,room,start,duration,weekday,week):
 			self.klas = TableParser.Klas.link(unicode(klas),self)
 			self.course = TableParser.Course.link(unicode(title),self)
@@ -157,39 +153,28 @@ class TableParser:
 			return "<Lecture %s >" % " ".join(map(repr,[self.klas.name,self.course.name,self.professor.name,self.room.name,self.start,self.duration,self.weekday,self.week]))
 
 	def Parse(self):
-		# find all timetables given and start work on them.
-		#<table class="header-2-args" border="0" cellspacing="0" width="100%">
+		""" -ENOINSPIRATION"""
 		if self.source == None:
 			self.getSource()
+		# build tree
 		soup = BeautifulSoup(self.source)
+		# Iterate through all TIMETABLES in the HTML
 		for ttheader in soup.html.body.findAll("table",{"class":"header-border-args"}):
-			colday = []
-			# HEADER - has some crucial data
-			#<span class="header-2-1-0"> Studentenrooster: </span>
+			day_from_col = []
+			# GENERIC HEADER - has some crucial data
 			ttype = ttheader.find('span',{'class':'header-2-1-0'}).string.strip()[:-1]
-			#<span class="header-2-1-1">2PBEIE3</span>
 			klas = ttheader.find('span',{'class':'header-2-1-1'}).string.strip()
-			#<table cellspacing='0' border='0' width='100%' class='header-3-args'>
-			#<span class="header-3-0-1"> 22 </span>
-			#<span class="header-3-0-3"> 36 </span>
 			wspan = [ttheader.find('span',{'class':'header-3-0-1'}).string.strip(),ttheader.find('span',{'class':'header-3-0-3'}).string.strip()]
 			wspan = map(int,wspan)
-			# TIMETABLE HEAD- actual schedule data
-			# jump to the timetable
-			#<table class="grid-border-args" cellspacing="0">
-			ctable = ttheader.findNextSibling('table',{'class':'grid-border-args'})
-			# iterate through columns of the header line
-			header = ctable.find('tr')
-			#<td class="col-label-one" colspan="3"> dinsdag </td>
-			for i,col in enumerate(header.findAll('td',{'class':'col-label-one'})):
-				#iterate through spanning column headers
-				span = int(col['colspan'].strip())
-				colday.extend([i+1]*span)
-			print "colday= %s" %(repr(colday))
-			# colday should now be like [0,0,0,1,1,2,3,3,3,3]
-			# TIMETABLE datarows
-			for row in header.findNextSiblings('tr'):
-				#first column contains start hour of the row
+			# TIMEGRID HEAD - actual schedule data
+			# => see how many columns each day has
+			# build a list like: [0,0,0,1,1,2,3,3,3,3]
+			headrow = ttheader.findNextSibling('table',{'class':'grid-border-args'}).find('tr')
+			for i,col in enumerate(headrow.findAll('td',{'class':'col-label-one'})):
+				day_from_col.extend([i+1]* int(col['colspan'].strip()))
+			# TIMETABLE - scan each row for events
+			for row in headrow.findNextSiblings('tr'):
+				# Row's first column: contains the time events start at
 				hourcell = row.find('td',{'class':'row-label-one'})
 				newh = hourcell.string.strip()
 				# support for events starting at :15 and :45 
@@ -198,58 +183,47 @@ class TableParser:
 				else:
 					start = start + timedelta(minutes=15)
 				# loop through columns, these can contain events starting at starthour
-				for colnum, column in enumerate(hourcell.findNextSiblings('td')):
+				for colnum, nthcell in enumerate(hourcell.findNextSiblings('td')):
 					# check the cell for presence of a table
-					#<table class="object-cell-args" border="0" cellspacing="0" width="100%">
-					container = column.find('table',{'class':'object-cell-args'})
-					# If the cell has an event, we hit the bull
+					container = nthcell.find('table',{'class':'object-cell-args'})
+					# The cell holds an event? process it!
 					if container:
 						# we can determine the weekday from the value of colday
-						weekday = colday[colnum]
-						# rowspan count represents blocks of 15 minutes
-						#<td class="object-cell-border" colspan="1" rowspan="12">
-						duration = timedelta(minutes=int(column['rowspan']) * 30)
-						(title,weeks,room,prof) = map(lambda x: x.string.strip(), column.findAll('td'))
+						weekday = day_from_col[colnum]
+						# rowspan -> 30 minute blocks
+						duration = timedelta(minutes=int(nthcell['rowspan']) * 30)
+						(title,weeks,room,prof) = map(lambda x: x.string.strip(), nthcell.findAll('td'))
 						for week in WeekNotation2Array(weeks):
 							self.Lectures.append(self.Lecture(klas,title,prof,room,start,duration,weekday,week))
 
 class ProfessorParser(TableParser):
 	objectclass = "staff"
-	template = "DN+Docent+individueel"
-	
 class RoomParser(TableParser):
 	objectclass = "room"
-	template = "DN+Zaal+individueel"
-
 class KlasParser(TableParser):
 	objectclass = "student"
-	template = "DN+Studentenset+individueel"
 
-def preptimes(x):
+def IcalGlue(x):
+	""" Lecture -- Ical event glue code """
 	class y: pass
+	x.location = y()
+	x.organizer = y()
 	x.dtstamp = datetime.now()
 	x.dtstart = datetime.combine(WD2Date(x.week, x.weekday), x.start)
 	x.dtend = x.dtstart + x.duration
-	x.description = x.course.name
-	x.summary = x.course.name
-	x.location = y()
+	x.description = x.summary = x.course.name
 	x.location.name = x.room.name
-	x.organizer = y()
 	x.organizer.name = x.professor.name
 	x.organizer.email = "iemand@denayer.wenk.be"
 	x.reqpart = [x.organizer]
 	return x
 
 if __name__ == "__main__":
-	s = WebsiteSource()
-	s.UpdateCandidates()
-	#print map(lambda x: x.name, s.tables)
-	#p = filter(lambda x: x.name == 'Ma EI2',s.tables)[0]
-	#p = filter(lambda x: x.name == 'SP1',s.tables)[0]
-	p = s.getTable('SP1')
-	p.getSource()
-	p.Parse()
-	print "\n".join(map(repr,filter(lambda x: x.start==time(hour=8),p.Lectures)))
+	source = WebsiteSource()
+	source.UpdateCandidates()
+	timetable = source.getTable('SP1')
+	timetable.Parse()
+	print "\n".join(map(repr,filter(lambda l: l.start==time(hour=8),timetable.Lectures)))
 	x = open('/home/thomas/test.ics','w')
-	x.write(ical.IcalFile(map(preptimes,p)).toString().encode('utf-8'))
+	x.write(ical.IcalFile(map(IcalGlue,timetable)).toString().encode('utf-8'))
 	x.close()
