@@ -53,12 +53,15 @@ class LinkClass:
 				dead.add(ref)
 		cls._instances -= dead
 
+class ParseError(Exception): pass
+
 class WebsiteSource:
 	""" This class should be a repository you can ask for timetables """
 	tables = []	
+	departments = [('IW','iw'),('Tech','tech')] #['ArchitectuurSLB','ArchitectuurSLG']
+	url= "http://sws.wenk.be/get_timetable.php"
 	def UpdateCandidates(self):
 		""" Build a list of timetables using data from sws.wenk.be """
-		departments = [('IW','iw'),('Technologie','tech')] #['ArchitectuurSLB','ArchitectuurSLG']
 		source = "http://sws.wenk.be/js/filter_%s.js"
 		weekentry = r"""^\s+AddWeeks\s*\(\s*"(\d+)"\s*,\s*\"()\"\s*,\s*form.elements\["weeks"\]\);\s*$"""
 
@@ -82,55 +85,74 @@ class WebsiteSource:
 			return ret.values()
 
 		self.tables = []
-		for department in departments:
+		for department in self.departments:
 			remotefile = urllib.urlopen(source % department[1])
 			contents = remotefile.read()
 			remotefile.close()
 			
 			for i in JSarrayToList(contents, 'roomarray', 3):
-				self.tables.append(RoomParser(*[i[0],i[2]]))
+				self.tables.append(RoomTable(*[i[0],i[2],department[0]]))
 			for i in JSarrayToList(contents, 'staffarray', 3):
-				self.tables.append(ProfessorParser(*[i[0],i[2]]))
+				self.tables.append(ProfessorTable(*[i[0],i[2],department[0]]))
 			for i in JSarrayToList(contents, 'studentsetarray', 3):
-				self.tables.append(KlasParser(*[i[0],i[2]]))
+				self.tables.append(KlasTable(*[i[0],i[2],department[0]]))
 
 	def getTable(self,id):
+		return self.getTables([id])[0]
+
+	def getTables(self,tlist):
+		""" Fetch tables """
+		if not tlist:
+			raise Exception("no tables given")
+		# tables need to be fetched one department at a time?
+		#print [t.name for t in tlist]
+		for dept in self.departments:
+			print "any of these? ",dept
+			tables = filter(lambda t: t.department == dept[0],tlist)
+			print map(lambda x: x.department,tlist)
+			#testing with one at a time for now
+			table = tables[0]
+			getdict = {	"identifier[]": table.id,
+						"weeks":"1-13", "type": table.objectclass,
+						"filter":"(None)", "dept": table.department}
+			# do we have to close af file object?
+			remotefile = urllib.urlopen(self.url,urllib.urlencode(getdict))
+			source = remotefile.read()
+			remotefile.close()
+			# build tree
+			soup = BeautifulSoup(source)
+			# Iterate through all TIMETABLES in the HTML
+			for ttheader in soup.html.body.findAll("table",{"class":"header-border-args"}):
+				id = ttheader.find('span',{'class':'header-2-1-1'}).string.strip()
+				try:
+					x = filter(lambda x: x.name == id, tables)[0]
+				except KeyError:
+					raise ParseError, "Returned table not requested"
+				x.Parse(ttheader)
+		return tlist
+
+	def byName(self,id):
 		""" return an iterator over lectures.
 			@id the name of the klas/prof/room """
 		if not self.tables:
 			self.UpdateCandidates()
 		x = filter(lambda x: x.name == id, self.tables)
-		if len(x):
-			return x[0]
-		else:
-			return None
+		return x
 
 class TableParser:
 	""" Fetches, parses a timetable from the internet,
 		provides an iterator over events				"""
 	Lectures = []
 	source = None
-	def __init__(self,name,id):
+	hasdata = False
+
+	def __init__(self,name,id,dept):
 		self.name = name
 		self.id = id
+		self.department = dept
 	def __iter__(self):
 		""" For now, iterate through lectures (FIX THIS) """
 		return iter(self.Lectures)
-
-	def getSource(self):
-		""" Fetch html table """
-		# FIXME: this code should be generic and able to retrieve
-		# any number of tables at once!!!
-		url= "http://sws.wenk.be/get_timetable.php"
-		getdict = {	"identifier[]": self.id, ##
-					"weeks":"1-13", ## dit is mogelijk fout!!!!
-					"type": self.objectclass,	
-					"filter":"(None)",
-					"dept":"IW",
-		}
-		remotefile = urllib.urlopen(url,urllib.urlencode(getdict))
-		self.source = remotefile.read()
-		remotefile.close()
 
 	# Helper classes, to build relations between instances
 	# this will allow to do basic queries on classes(tables)
@@ -160,14 +182,8 @@ class TableParser:
 											self.duration,
 											self.weekday,
 											self.week	]	)	)
-	def Parse(self):
-		""" -ENOINSPIRATION"""
-		if self.source == None:
-			self.getSource()
-		# build tree
-		soup = BeautifulSoup(self.source)
-		# Iterate through all TIMETABLES in the HTML
-		for ttheader in soup.html.body.findAll("table",{"class":"header-border-args"}):
+
+	def Parse(self,ttheader):
 			day_from_col = []
 			# GENERIC HEADER - has some crucial data
 			ttype = ttheader.find('span',{'class':'header-2-1-0'}).string.strip()[:-1]
@@ -185,31 +201,30 @@ class TableParser:
 				# Row's first column: contains the time events start at
 				hourcell = row.find('td',{'class':'row-label-one'})
 				newh = hourcell.string.strip()
-				# support for events starting at :15 and :45 
 				if newh != '':
 					start = HourDotMinute2Time(newh)
-				else:
-					start = start + timedelta(minutes=15)
 				# loop through columns, these can contain events starting at starthour
-				for colnum, nthcell in enumerate(hourcell.findNextSiblings('td')):
+				for nth, nthcell in enumerate(hourcell.findNextSiblings('td')):
 					# check the cell for presence of a table
 					container = nthcell.find('table',{'class':'object-cell-args'})
 					# The cell holds an event? process it!
 					if container:
 						# we can determine the weekday from the value of colday
-						weekday = day_from_col[colnum]
+						weekday = day_from_col[nth]
 						# rowspan -> 30 minute blocks
 						duration = timedelta(minutes=int(nthcell['rowspan']) * 30)
 						(title,weeks,room,prof) = map(lambda x: x.string.strip(), nthcell.findAll('td'))
 						for week in WeekNotation2Array(weeks):
 							self.Lectures.append(self.Lecture(klas,title,prof,room,start,duration,weekday,week))
+			self.hasdata = True
 
-class ProfessorParser(TableParser):
+class ProfessorTable(TableParser):
 	objectclass = "staff"
-class RoomParser(TableParser):
+class RoomTable(TableParser):
 	objectclass = "room"
-class KlasParser(TableParser):
+class KlasTable(TableParser):
 	objectclass = "student"
+
 
 def IcalGlue(x):
 	""" Lecture -- Ical event glue code """
@@ -229,10 +244,11 @@ def IcalGlue(x):
 if __name__ == "__main__":
 	source = WebsiteSource()
 	source.UpdateCandidates()
-	timetable = source.getTable('SP1')
-	timetable.Parse()
+	wanted = source.byName('SP1')
+	timetable = source.getTables(wanted)[0]
+	print "\n".join(map(repr,timetable.Lectures))
 	#print "\n".join(map(repr,filter(lambda l: l.start==time(hour=8),timetable.Lectures)))
-	print "\n".join(map(repr,timetable.Room.unique("A102")))
+	#print "\n".join(map(repr,timetable.Room.unique("A102")))
 	x = open('/home/thomas/test.ics','w')
-	x.write(ical.IcalFile(map(IcalGlue,timetable)).toString().encode('utf-8'))
+	x.write(ical.IcalFile(map(IcalGlue,timetable.Lectures)).toString().encode('utf-8'))
 	x.close()
