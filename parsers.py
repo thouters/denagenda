@@ -113,6 +113,8 @@ class LectureTable:
 			headrow = ttheader.findNextSibling('table',{'class':'grid-border-args'}).find('tr')
 			for i,col in enumerate(headrow.findAll('td',{'class':'col-label-one'})):
 				day_from_col.extend([i+1]* int(col['colspan'].strip()))
+			colcount = len(day_from_col)
+			skip = [0]*colcount
 			# TIMETABLE - scan each row for events
 			for row in headrow.findNextSiblings('tr'):
 				# Row's first column: contains the time events start at
@@ -120,16 +122,23 @@ class LectureTable:
 				newh = hourcell.string.strip()
 				if newh != '':
 					start = HourDotMinute2Time(newh)
+				skipdelta = [0]*colcount
 				# loop through columns, these can contain events starting at starthour
 				for nth, nthcell in enumerate(hourcell.findNextSiblings('td')):
 					# check the cell for presence of a table
 					container = nthcell.find('table',{'class':'object-cell-args'})
 					# The cell holds an event? process it!
 					if container:
-						# we can determine the weekday from the value of colday
-						weekday = day_from_col[nth]
+						# calculate which column this can fit in
+						holes = map(lambda x: x[0],filter(lambda y: y[1] == 0,enumerate(skip)))
+						colnum = holes[nth]
+						print colnum
+						# we can determine the weekday from the value of colnum
+						weekday = day_from_col[colnum]
+						rowspan = int(nthcell['rowspan'])
+						skipdelta[colnum] = rowspan
 						# rowspan -> 30 minute blocks
-						duration = timedelta(minutes=int(nthcell['rowspan']) * 30)
+						duration = timedelta(minutes=rowspan * 30)
 						# student:   title -- weeks -- room -- prof
 						# docent:    title -- klassen -- weeks -- lokalen
 						# room:      title -- klassen -- weeks -- docent
@@ -138,6 +147,12 @@ class LectureTable:
 							y = self.Lecture(klas,title,prof,room,start,duration,weekday,week)
 							y.debug = str(nth)+repr(day_from_col)
 							self.Lectures.append(y)
+				# add skipdelta to skip, and decrement skip if possible
+				for i in range(colcount):
+					skip[i] += skipdelta[i]
+					if skip[i] >0:
+						skip[i] = skip[i] - 1
+
 			self.hasdata = True
 
 class ProfessorTable(LectureTable):
@@ -211,10 +226,10 @@ class WebsiteSource:
 					continue
 				#print "debug tables=", map(lambda x: x.department,tables)
 				# generic post variables
-				request = urllib.urlencode({	"weeks":"1-13", # FIXME
-										"type": tabletype,	
-										"filter":"(None)",
-										"dept":dept})
+				request = urllib.urlencode({"weeks":"1-13", # FIXME
+											"type": tabletype,	
+											"filter":"(None)",
+											"dept":dept})
 				# add a list of identifiers to the post request
 				request = "&".join([request]+map(lambda t: urllib.urlencode({"identifier[]": t.id}),tables))
 				# fetch html and parse
