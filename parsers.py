@@ -135,7 +135,9 @@ class LectureTable:
 						# room:      title -- klassen -- weeks -- docent
 						(title,weeks,room,prof) = map(lambda x: x.string.strip(), nthcell.findAll('td'))
 						for week in WeekNotation2Array(weeks):
-							self.Lectures.append(self.Lecture(klas,title,prof,room,start,duration,weekday,week))
+							y = self.Lecture(klas,title,prof,room,start,duration,weekday,week)
+							y.debug = str(nth)+repr(day_from_col)
+							self.Lectures.append(y)
 			self.hasdata = True
 
 class ProfessorTable(LectureTable):
@@ -150,7 +152,7 @@ class KlasTable(LectureTable):
 
 class WebsiteSource:
 	""" This class should be a repository you can ask for timetables """
-	departments = ['IW','Tech']
+	departments = ['IW','TECH']
 	ttypes = [ProfessorTable, RoomTable, KlasTable]
 	geturl= "http://sws.wenk.be/get_timetable.php"
 	listurl = "http://sws.wenk.be/js/filter_%s.js"
@@ -196,6 +198,8 @@ class WebsiteSource:
 
 	def getTables(self,wanted):
 		""" Fetch tables """
+		# get rid of None's in te list
+		wanted = filter(lambda t: t != None, wanted)
 		# tables need to be fetched one department at a time.
 		for dept in self.departments:
 			indept = filter(lambda t: t.department == dept,wanted)
@@ -205,23 +209,22 @@ class WebsiteSource:
 				tables = filter(lambda t: t.typeid == tabletype,indept)
 				if not tables:
 					continue
-				print "debug tables=", map(lambda x: x.department,tables)
+				#print "debug tables=", map(lambda x: x.department,tables)
 				# generic post variables
-				d = urllib.urlencode({	"weeks":"1-13", # FIXME
+				request = urllib.urlencode({	"weeks":"1-13", # FIXME
 										"type": tabletype,	
 										"filter":"(None)",
 										"dept":dept})
 				# add a list of identifiers to the post request
-				d = "&".join([d]+map(lambda x: urllib.urlencode({"identifier[]": x.id}),tables))
-				# fetch
-				remotefile = urllib.urlopen(self.geturl,d)
+				request = "&".join([request]+map(lambda t: urllib.urlencode({"identifier[]": t.id}),tables))
+				# fetch html and parse
+				remotefile = urllib.urlopen(self.geturl,request)
 				source = remotefile.read()
 				remotefile.close()
-				# build tree
 				soup = BeautifulSoup(source)
-
+				# debug -- save to disk
 				x = open("".join(map(lambda x: x.name,tables)),'w')
-				x.write(soup.prettify()) #encode('utf-8'))
+				x.write(soup.prettify())
 				x.close()
 				# Iterate through all TIMETABLES in the HTML
 				for ttheader in soup.html.body.findAll("table",{"class":"header-border-args"}):
@@ -233,15 +236,15 @@ class WebsiteSource:
 					x.Parse(ttheader)
 		return wanted
 
-	def byName(self,id):
-		""" return an iterator over lectures.
-			@id the name of the klas/prof/room """
+	def byName(self,name):
+		""" return an timetable that matches this name """
 		if not self.tables:
 			self.UpdateCandidates()
-		x = filter(lambda x: x.name == id, self.tables)
-		return x
-
-
+		matches = filter(lambda t: t.name == name, self.tables)[:1]
+		if len(matches):
+			return matches[0]
+		else:
+			return None
 
 def IcalGlue(x):
 	""" Lecture -- Ical event glue code """
@@ -251,7 +254,8 @@ def IcalGlue(x):
 	x.dtstamp = datetime.now()
 	x.dtstart = datetime.combine(WD2Date(x.week, x.weekday), x.start)
 	x.dtend = x.dtstart + x.duration
-	x.description = x.summary = x.course.name
+	x.summary = x.course.name
+	x.description = x.debug
 	x.location.name = x.room.name
 	x.organizer.name = x.professor.name
 	x.organizer.email = "iemand@denayer.wenk.be"
@@ -261,11 +265,8 @@ def IcalGlue(x):
 if __name__ == "__main__":
 	source = WebsiteSource()
 	source.UpdateCandidates()
-	wanted = source.byName('SP1')
-	timetable = source.getTables(wanted)[0]
-	print "\n".join(map(repr,timetable.Lectures))
-	#print "\n".join(map(repr,filter(lambda l: l.start==time(hour=8),timetable.Lectures)))
-	#print "\n".join(map(repr,timetable.Room.unique("A102")))
+	wanted = map(lambda x: source.byName(x),['SP1'])#,'1PBEIE1'])
+	timetables = source.getTables(wanted)
 	x = open('/home/thomas/test.ics','w')
-	x.write(ical.IcalFile(map(IcalGlue,timetable.Lectures)).toString().encode('utf-8'))
+	x.write(ical.IcalFile(map(IcalGlue,timetables[0].Lectures)).toString().encode('utf-8'))
 	x.close()

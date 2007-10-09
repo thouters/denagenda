@@ -42,7 +42,7 @@ class STP:
 	
 	
 	linelayout = (	# chop list of weeks separated by ';', convert to int
-					('weeks',	WeekNotation2Array)),
+					('weeks',	WeekNotation2Array),
 					# weeknumber is an integer
 					('weekday',	int),
 					# conventional time notation to time object
@@ -98,4 +98,4 @@ class STP:
 
 if __name__=="__main__":
 	s = STP('txtsrc/sp1.txt')
-	print ical.IcalFile(s)
+	print ical.IcalFile(s).toString()
