@@ -140,21 +140,6 @@ class testEvent:
 		self.location = self.o()
 		self.location.name = "Conference room"
 
-def IcalGlue(x):
-	""" Lecture -- Ical event glue code """
-	class y: pass
-	x.location = y()
-	x.organizer = y()
-	x.dtstamp = datetime.now()
-	x.dtstart = datetime.combine(WD2Date(x.week, x.weekday), x.start)
-	x.dtend = x.dtstart + x.duration
-	x.summary = x.course.name
-	x.description = x.summary
-	x.location.name = x.room.name
-	x.organizer.name = x.professor.name
-	x.organizer.email = "iemand@denayer.wenk.be"
-	x.reqpart = [x.organizer]
-	return x
 
 if __name__ == '__main__':
 	# output an icalfile with two testevents, one at 10am and one at 12
