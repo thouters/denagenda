@@ -263,7 +263,7 @@ class WebsiteSource:
 if __name__ == "__main__":
 	source = WebsiteSource()
 	source.UpdateCandidates()
-	wanted = map(lambda x: source.byName(x),['3PBEII'])#,'1PBEIE1'])
+	wanted = map(lambda x: source.byName(x),['Ma EMEM2'])#,'1PBEIE1'])
 	timetables = source.getTables(wanted)
 	x = open('/home/thomas/test.ics','w')
 	x.write(ical.IcalFile(map(ical.IcalGlue,timetables[0].Lectures)).toString().encode('utf-8'))
