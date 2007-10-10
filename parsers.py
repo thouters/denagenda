@@ -132,7 +132,6 @@ class LectureTable:
 						# calculate which column this can fit in
 						holes = map(lambda x: x[0],filter(lambda y: y[1] == 0,enumerate(skip)))
 						colnum = holes[nth]
-						print colnum
 						# we can determine the weekday from the value of colnum
 						weekday = day_from_col[colnum]
 						rowspan = int(nthcell['rowspan'])
@@ -224,7 +223,6 @@ class WebsiteSource:
 				tables = filter(lambda t: t.typeid == tabletype,indept)
 				if not tables:
 					continue
-				#print "debug tables=", map(lambda x: x.department,tables)
 				# generic post variables
 				request = urllib.urlencode({"weeks":"1-13", # FIXME
 											"type": tabletype,	
@@ -238,9 +236,9 @@ class WebsiteSource:
 				remotefile.close()
 				soup = BeautifulSoup(source)
 				# debug -- save to disk
-				x = open("".join(map(lambda x: x.name,tables)),'w')
-				x.write(soup.prettify())
-				x.close()
+				#x = open("".join(map(lambda x: x.name,tables)),'w')
+				#x.write(soup.prettify())
+				#x.close()
 				# Iterate through all TIMETABLES in the HTML
 				for ttheader in soup.html.body.findAll("table",{"class":"header-border-args"}):
 					id = ttheader.find('span',{'class':'header-2-1-1'}).string.strip()
@@ -261,27 +259,12 @@ class WebsiteSource:
 		else:
 			return None
 
-def IcalGlue(x):
-	""" Lecture -- Ical event glue code """
-	class y: pass
-	x.location = y()
-	x.organizer = y()
-	x.dtstamp = datetime.now()
-	x.dtstart = datetime.combine(WD2Date(x.week, x.weekday), x.start)
-	x.dtend = x.dtstart + x.duration
-	x.summary = x.course.name
-	x.description = x.debug
-	x.location.name = x.room.name
-	x.organizer.name = x.professor.name
-	x.organizer.email = "iemand@denayer.wenk.be"
-	x.reqpart = [x.organizer]
-	return x
 
 if __name__ == "__main__":
 	source = WebsiteSource()
 	source.UpdateCandidates()
-	wanted = map(lambda x: source.byName(x),['SP1'])#,'1PBEIE1'])
+	wanted = map(lambda x: source.byName(x),['3PBEII'])#,'1PBEIE1'])
 	timetables = source.getTables(wanted)
 	x = open('/home/thomas/test.ics','w')
-	x.write(ical.IcalFile(map(IcalGlue,timetables[0].Lectures)).toString().encode('utf-8'))
+	x.write(ical.IcalFile(map(ical.IcalGlue,timetables[0].Lectures)).toString().encode('utf-8'))
 	x.close()
