@@ -6,58 +6,10 @@ import ical
 from BeautifulSoup import BeautifulSoup
 import weakref, urllib,re
 
-class LinkClass:
-	""" This class implements relational links between classes"""
-	_instances = set()
-	_refs = set()
-	def __repr__(self):
-		return "< %s %s >" % (	self.__class__.__name__, self.name)
-
-	def __iter__(self):
-		""" Iterate the list of objects that refer to this instance """
-		dead = set()
-		for ref in self._refs:
-			obj = ref()
-			if obj is not None:
-				yield obj
-			else:
-				dead.add(ref)
-		self._refs -= dead
-
-	@classmethod
-	def link(cls,name,obj):
-		x = cls.unique(name)
-		x._refs.add(weakref.ref(obj))
-		return x
-
-	@classmethod
-	def unique(cls,name):
-		"""Obtain a reference to an instance of this class, wth name==name  """
-		double = filter(lambda x: x.name == name,cls.getinstances())
-		if double:
-			return double[0]
-		else:
-			x = cls()
-			x.name = name
-			cls._instances.add(weakref.ref(x))
-			return x
-	@classmethod
-	def getinstances(cls):
-		""" get a list of instances """
-		dead = set()
-		for ref in cls._instances:
-			obj = ref()
-			if obj is not None:
-				yield obj
-			else:
-				dead.add(ref)
-		cls._instances -= dead
-
 class ParseError(Exception): pass
 
-class LectureTable:
-	""" Fetches, parses a timetable from the internet,
-		provides an iterator over events				"""
+class FreshLectureTable:
+	""" Freshly parsed Timetable """
 	Lectures = []
 	source = None
 	hasdata = False
@@ -67,46 +19,54 @@ class LectureTable:
 		self.id = id
 		self.department = dept
 	def __iter__(self):
-		""" For now, iterate through lectures (FIX THIS) """
+		""" Iterate over Lectures """
 		return iter(self.Lectures)
 
-	# Helper classes, to build relations between instances
-	# this will allow to do basic queries on classes(tables)
-	class Klas(LinkClass): pass
-	class Course(LinkClass): pass
-	class Professor(LinkClass): pass
-	class Room(LinkClass): pass
-	 
 	class Lecture:
 		""" Helper class """
-		def __init__(self,klas,title,prof,room,start,duration,weekday,week):
-			self.klas = LectureTable.Klas.link(unicode(klas),self)
-			self.course = LectureTable.Course.link(unicode(title),self)
-			self.professor = LectureTable.Professor.link(unicode(prof),self)
-			self.room = LectureTable.Room.link(unicode(room),self)
-			self.start = start
-			self.duration = duration
-			self.weekday = weekday
-			self.week = week
+		def __init__(self,reldata,timedata):
+			for (n,i) in	list(reldata.iteritems())+ \
+							list(timedata.iteritems()):
+				setattr(self,n,i)
 		def __repr__(self):
-			return "< %s >" % " ".join(	[self.__class__.__name__] + 
-								map(repr,[	self.klas.name,
-											self.course.name,
-											self.professor.name,
-											self.room.name,
-											self.start,
-											self.duration,
-											self.weekday,
-											self.week	]	)	)
+			s = '< %s \'%s\'\n' % (self.__class__.__name__,self.title)
+			s += 't= %s at %s for %s minutes\n' % \
+				(dncalendar.nlwd[self.weekday], repr(self.start),
+				repr(self.duration))
+			s += 'Students: %s \n' % repr(self.student)
+			s += 'Staff: %s \n' % repr(self.staff)
+			s += 'Rooms: %s \n' % repr(self.room)
+			return s
+
+		def iCalFace(self):
+			""" Lecture -- Ical event glue code """
+			class y: pass
+			class person:
+				email = "iemand@denayer.wenk.be"
+				def __init__(self,name):
+					self.name = name
+			x = y()
+			x.dtstamp = datetime.now()
+			x.dtstart = datetime.combine(WD2Date(self.week, self.weekday), self.start)
+			x.dtend = x.dtstart + self.duration
+			x.summary = self.title
+			x.description = self.title
+			x.location = y()
+			x.location.name = self.room[0]
+			x.staff = map(person,self.staff)
+			x.students = map(person,self.student) 
+			x.organizer = x.staff[0]
+			x.reqpart = x.staff + x.students
+			return x
+
 
 	def Parse(self,ttheader):
 			day_from_col = []
 			# GENERIC HEADER - has some crucial data
-			ttype = ttheader.find('span',{'class':'header-2-1-0'}).string.strip()[:-1]
-			# hier type herkennen en magie doen
-			klas = ttheader.find('span',{'class':'header-2-1-1'}).string.strip()
-			wspan = [ttheader.find('span',{'class':'header-3-0-1'}).string.strip(),ttheader.find('span',{'class':'header-3-0-3'}).string.strip()]
-			wspan = map(int,wspan)
+			id = ttheader.find('span',{'class':'header-2-1-1'}).string.strip()
+			wspan = [	ttheader.find('span',{'class':'header-3-0-1'}).string.strip(),
+						ttheader.find('span',{'class':'header-3-0-3'}).string.strip()]
+			self.wspan = map(int,wspan)
 			# TIMEGRID HEAD - actual schedule data
 			# => see how many columns each day has
 			# build a list like: [0,0,0,1,1,2,3,3,3,3]
@@ -114,7 +74,7 @@ class LectureTable:
 			for i,col in enumerate(headrow.findAll('td',{'class':'col-label-one'})):
 				day_from_col.extend([i+1]* int(col['colspan'].strip()))
 			colcount = len(day_from_col)
-			skip = [0]*colcount
+			vspanc = [0]*colcount
 			# TIMETABLE - scan each row for events
 			for row in headrow.findNextSiblings('tr'):
 				# Row's first column: contains the time events start at
@@ -122,49 +82,68 @@ class LectureTable:
 				newh = hourcell.string.strip()
 				if newh != '':
 					start = HourDotMinute2Time(newh)
-				skipdelta = [0]*colcount
+				vspand = [0]*colcount
+				# which columns will these td elements map to
+				td_col = map(lambda x: x[0],filter(lambda y: y[1] == 0,enumerate(vspanc)))
 				# loop through columns, these can contain events starting at starthour
 				for nth, nthcell in enumerate(hourcell.findNextSiblings('td')):
 					# check the cell for presence of a table
 					container = nthcell.find('table',{'class':'object-cell-args'})
-					# The cell holds an event? process it!
-					if container:
-						# calculate which column this can fit in
-						holes = map(lambda x: x[0],filter(lambda y: y[1] == 0,enumerate(skip)))
-						colnum = holes[nth]
-						# we can determine the weekday from the value of colnum
-						weekday = day_from_col[colnum]
-						rowspan = int(nthcell['rowspan'])
-						skipdelta[colnum] = rowspan
-						# rowspan -> 30 minute blocks
-						duration = timedelta(minutes=rowspan * 30)
-						# student:   title -- weeks -- room -- prof
-						# docent:    title -- klassen -- weeks -- lokalen
-						# room:      title -- klassen -- weeks -- docent
-						(title,weeks,room,prof) = map(lambda x: x.string.strip(), nthcell.findAll('td'))
-						for week in WeekNotation2Array(weeks):
-							y = self.Lecture(klas,title,prof,room,start,duration,weekday,week)
-							y.debug = str(nth)+repr(day_from_col)
-							self.Lectures.append(y)
-				# add skipdelta to skip, and decrement skip if possible
+					# No event inside? next!
+					if not container:
+						continue
+					colnum = td_col[nth]
+					(timedata,reldata) = (dict(),dict())
+					# we can determine the weekday from the value of colnum
+					timedata['weekday'] = day_from_col[colnum]
+					rowspan = int(nthcell['rowspan'])
+					# this event makes td tags absent for the next n rows
+					vspand[colnum] = rowspan
+					# each row is a 30 minute block
+					timedata['duration'] = timedelta(minutes=rowspan * 30)
+					timedata['start'] = start
+					# Map the contents of the event cell to a dict
+					fields = map(lambda x: x.string, nthcell.findAll('td'))
+					# place the name of this table's EOI in staff/room/student 
+					reldata[self.typeid] = [id]
+					for field in self.eventconstr:
+						c = fields[self.eventconstr.index(field)]
+						if c == None:
+							c = "Unknown"
+						if field == 'weeks':
+							# weeks is list(int)
+							c = WeekNotation2Array(c)
+						elif field != 'title':
+							# split reflist and remove whitespace
+							c = map(lambda s: s.strip(),c.split(','))
+						reldata[field] = c 
+					# yield individual lectures
+					for week in reldata['weeks']:
+						timedata['week'] = week
+						y = self.Lecture(reldata,timedata)
+						self.Lectures.append(y)
+				# add vspan delta to vspanc, and decrement vspanc if possible
 				for i in range(colcount):
-					skip[i] += skipdelta[i]
-					if skip[i] >0:
-						skip[i] = skip[i] - 1
-
+					vspanc[i] += vspand[i]
+					if vspanc[i] >0:
+						vspanc[i] = vspanc[i] - 1
 			self.hasdata = True
 
-class ProfessorTable(LectureTable):
-	typeid = "staff"
-	clistfilter = "staffarray"
-class RoomTable(LectureTable):
-	typeid = "room"
-	clistfilter = "roomarray"
-class KlasTable(LectureTable):
-	typeid = "student"
-	clistfilter = "studentsetarray"
 
-class WebsiteSource:
+class ProfessorTable(FreshLectureTable):
+	clistfilter = "staffarray"
+	typeid = "staff"
+	eventconstr = ['title','student','weeks','room']
+class RoomTable(FreshLectureTable):
+	clistfilter = "roomarray"
+	typeid = "room"
+	eventconstr = ['title','student','weeks','staff']
+class KlasTable(FreshLectureTable):
+	clistfilter = "studentsetarray"
+	typeid = "student"
+	eventconstr = ['title','weeks','room','staff']
+
+class OnlineTables:
 	""" This class should be a repository you can ask for timetables """
 	departments = ['IW','TECH']
 	ttypes = [ProfessorTable, RoomTable, KlasTable]
@@ -261,10 +240,10 @@ class WebsiteSource:
 
 
 if __name__ == "__main__":
-	source = WebsiteSource()
+	source = OnlineTables()
 	source.UpdateCandidates()
-	wanted = map(lambda x: source.byName(x),['Ma EMEM2'])#,'1PBEIE1'])
+	wanted = map(lambda x: source.byName(x),['CRAUWELS Herman'])#['Ma EMEM2'])#['SP1'])#['1PBEIE1'])#,
 	timetables = source.getTables(wanted)
 	x = open('/home/thomas/test.ics','w')
-	x.write(ical.IcalFile(map(ical.IcalGlue,timetables[0].Lectures)).toString().encode('utf-8'))
+	x.write(ical.IcalFile(map(lambda l: l.iCalFace(),timetables[0].Lectures)).toString().encode('utf-8'))
 	x.close()

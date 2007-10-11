@@ -1,5 +1,7 @@
 from datetime import datetime, date, timedelta, time
 
+nlwd = ['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag','Zondag']
+
 def GetFirstDay(day = date.today()):
 	""" Calculate first day of the academic year.given day belongs to """
 	# get september first 

@@ -3,10 +3,10 @@ import cgi
 import cgitb; cgitb.enable()
 import ical
 import dncalendar
-from parsers import WebsiteSource
+from parsers import OnlineTables
 if __name__ == "__main__":
 	id = cgi.FieldStorage().getfirst("id")
-	source = WebsiteSource()
+	source = OnlineTables()
 	source.UpdateCandidates()
 	wanted = [source.byName(id)]
 	timetable = source.getTables(wanted)
@@ -15,7 +15,7 @@ if __name__ == "__main__":
 		print 
 		print "ongeldige id: %s" % id
 	else:
-		result = ical.IcalFile(map(dncalendar.IcalGlue,timetable[0].Lectures)).toString().encode('utf-8')
+		result = ical.IcalFile(map(lambda x: x.iCalFace(),timetable[0].Lectures)).toString().encode('utf-8')
 		print "Content-type: text/calendar"
 		print 
 		print result 
