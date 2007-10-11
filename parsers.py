@@ -42,9 +42,9 @@ class FreshLectureTable:
 			""" Lecture -- Ical event glue code """
 			class y: pass
 			class person:
-				email = "iemand@denayer.wenk.be"
 				def __init__(self,name):
 					self.name = name
+					self.email = name + "@invalid.denayer.be"
 			x = y()
 			x.dtstamp = datetime.now()
 			x.dtstart = datetime.combine(WD2Date(self.week, self.weekday), self.start)
@@ -221,6 +221,8 @@ class OnlineTables:
 				# Iterate through all TIMETABLES in the HTML
 				for ttheader in soup.html.body.findAll("table",{"class":"header-border-args"}):
 					id = ttheader.find('span',{'class':'header-2-1-1'}).string.strip()
+					if id == "":
+						id = ttheader.find('span',{'class':'header-2-1-2'}).string.strip()
 					try:
 						x = filter(lambda x: x.name == id, tables)[0]
 					except KeyError:
@@ -232,7 +234,7 @@ class OnlineTables:
 		""" return an timetable that matches this name """
 		if not self.tables:
 			self.UpdateCandidates()
-		matches = filter(lambda t: t.name == name, self.tables)[:1]
+		matches = filter(lambda t: t.name.lower() == name.lower(), self.tables)[:1]
 		if len(matches):
 			return matches[0]
 		else:
@@ -242,7 +244,7 @@ class OnlineTables:
 if __name__ == "__main__":
 	source = OnlineTables()
 	source.UpdateCandidates()
-	wanted = map(lambda x: source.byName(x),['CRAUWELS Herman'])#['Ma EMEM2'])#['SP1'])#['1PBEIE1'])#,
+	wanted = map(lambda x: source.byName(x),['pelgrims patrick'])#['K103'])#['CRAUWELS Herman'])#['Ma EMEM2'])#['SP1'])#['1PBEIE1'])#,
 	timetables = source.getTables(wanted)
 	x = open('/home/thomas/test.ics','w')
 	x.write(ical.IcalFile(map(lambda l: l.iCalFace(),timetables[0].Lectures)).toString().encode('utf-8'))
