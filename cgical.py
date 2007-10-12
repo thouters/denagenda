@@ -3,7 +3,7 @@ import cgi
 import cgitb; cgitb.enable()
 import ical
 import dncalendar
-from parsers import OnlineTables
+from webparser import OnlineTables
 if __name__ == "__main__":
 	id = cgi.FieldStorage().getfirst("id")
 	source = OnlineTables()
