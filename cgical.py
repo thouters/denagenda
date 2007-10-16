@@ -4,7 +4,7 @@ import cgitb; cgitb.enable()
 import ical
 import dncalendar
 import MySQLdb
-from webparser import OnlineTables
+from swsparser import OnlineTables
 
 if __name__ == "__main__":
 	db=MySQLdb.connect(user="dauser",passwd="dapasswd",db="denagenda")
