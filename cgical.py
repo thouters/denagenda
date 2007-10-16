@@ -21,8 +21,24 @@ import ical
 import dncalendar
 import MySQLdb
 from swsparser import OnlineTables
-
 if __name__ == "__main__":
+	id = cgi.FieldStorage().getfirst("id")
+	source = OnlineTables()
+	source.UpdateCandidates()
+	wanted = [source.byName(id)]
+	timetable = source.getTables(wanted)
+	if not timetable:
+		print "Content-type: text/html"
+		print 
+		print "ongeldige id: %s" % id
+	else:
+		result = ical.IcalFile(map(lambda x: x.iCalFace(),timetable[0].Lectures)).toString().encode('utf-8')
+		print "Content-type: text/calendar"
+		print 
+		print result 
+		
+#if __name__ == "__main__":
+if None:
 	db=MySQLdb.connect(user="dauser",passwd="dapasswd",db="denagenda")
 	c = db.cursor()
 	id = cgi.FieldStorage().getfirst("id")
