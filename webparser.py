@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+# -*- coding: utf-8 -*-
 from dncalendar import *
 from datetime import datetime, date, timedelta, time
 import ical
@@ -178,7 +178,7 @@ class OnlineTables:
 			# each department has its own list with staff, groups,...
 			# from this, build a list of instances of tabletypes
 			remotefile = urllib.urlopen(self.listurl % department.lower())
-			contents = remotefile.read()
+			contents = remotefile.read().decode('latin-1')
 			remotefile.close()
 			for tabletype in self.ttypes:
 				# filter the entities that go by this tabletype
@@ -244,8 +244,15 @@ class OnlineTables:
 if __name__ == "__main__":
 	source = OnlineTables()
 	source.UpdateCandidates()
-	wanted = map(lambda x: source.byName(x),['pelgrims patrick'])#['K103'])#['CRAUWELS Herman'])#['Ma EMEM2'])#['SP1'])#['1PBEIE1'])#,
+	wanted = map(lambda x: source.byName(x),[u'voet andré'])
+	#['K103'])#['CRAUWELS Herman'])#['Ma EMEM2'])#['SP1'])#['1PBEIE1'])#,
 	timetables = source.getTables(wanted)
 	x = open('/home/thomas/test.ics','w')
 	x.write(ical.IcalFile(map(lambda l: l.iCalFace(),timetables[0].Lectures)).toString().encode('utf-8'))
 	x.close()
+# basic unittesting: test all cases
+if None: #__name__ == "__main__":
+	source = OnlineTables()
+	source.UpdateCandidates()
+	timetables = source.getTables(source.tables)
+

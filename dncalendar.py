@@ -1,5 +1,7 @@
 from datetime import datetime, date, timedelta, time
 
+""" Utility functions to cope with the De Nayer week system"""
+
 nlwd = ['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag','Zondag']
 
 def GetFirstDay(day = date.today()):
