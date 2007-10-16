@@ -54,28 +54,6 @@ class FreshLectureTable:
 			s += 'Rooms: %s \n' % repr(self.room)
 			return s
 
-		def iCalFace(self):
-			""" Lecture -- Ical event glue code """
-			class y: pass
-			class person:
-				def __init__(self,name):
-					self.name = name
-					self.email = name + "@invalid.denayer.be"
-			x = y()
-			x.dtstamp = datetime.now()
-			x.dtstart = datetime.combine(WD2Date(self.week, self.weekday), self.start)
-			x.dtend = x.dtstart + self.duration
-			x.summary = self.title
-			x.description = self.title
-			x.location = y()
-			x.location.name = self.room[0]
-			x.staff = map(person,self.staff)
-			x.students = map(person,self.student) 
-			x.organizer = x.staff[0]
-			x.reqpart = x.staff + x.students
-			return x
-
-
 	def Parse(self,ttheader):
 			day_from_col = []
 			# GENERIC HEADER - has some crucial data
@@ -250,21 +228,69 @@ class OnlineTables:
 		""" return an timetable that matches this name """
 		if not self.tables:
 			self.UpdateCandidates()
-		matches = filter(lambda t: t.name.lower() == name.lower(), self.tables)[:1]
+		matches = filter(lambda t: t.name == name, self.tables)[:1]
 		if len(matches):
 			return matches[0]
 		else:
 			return None
 
+	def byMouth(self,name):
+		""" ignore case and spaces """
+		if not self.tables:
+			self.UpdateCandidates()
+		matches = filter(lambda t: t.name.lower().replace(' ','') == name, self.tables)[:1]
+		if len(matches):
+			return matches[0]
+		else:
+			return None
+
+class iCalFace:
+	""" Lecture -- Ical event glue code """
+	class dataobject:
+		def __init__(self,**k):
+			for (a,b) in k.iteritems():
+				setattr(self,a,b)
+	class person:
+		def __init__(self,name):
+			self.name = name
+			self.email = name.replace(" ",'') + "@invalid.denayer.be"
+	def __init__(self,i):
+		self.prep(i)
+		todo = ["dtstamp","dtstart","dtend","description", "summary","location","organizer","reqpart"]
+		for f in todo:
+			g = getattr(self,"_"+f,None)
+			if g:
+				setattr(self,f,g(i))
+	def prep(self,i):
+		from dncalendar import WD2Date
+		self.staff = map(self.person,i.staff)
+		self.students = map(self.person,i.student) 
+		self.dtstart = datetime.combine(WD2Date(i.week, i.weekday), i.start)
+	def _dtstamp(self,i):
+		return datetime.now()
+	def _dtstart(self,i):
+		return self.dtstart 
+	def _dtend(self,i):
+		return self.dtstart + i.duration
+	def _summary(self,i):
+		return i.title
+	def _description(self,i):
+		return i.title
+	def _organizer(self,i):
+		return self.staff[0]
+	def _reqpart(self,i):
+		return self.staff + self.students
+	def _location(self,i):
+		return self.person(i.room[0])
+
 
 if __name__ == "__main__":
 	source = OnlineTables()
 	source.UpdateCandidates()
-	wanted = map(lambda x: source.byName(x),[u'voet andré'])
 	#['K103'])#['CRAUWELS Herman'])#['Ma EMEM2'])#['SP1'])#['1PBEIE1'])#,
-	timetables = source.getTables(wanted)
+	timetable = source.getTable(source.byMouth('sp1'))
 	x = open('/home/thomas/test.ics','w')
-	x.write(ical.IcalFile(map(lambda l: l.iCalFace(),timetables[0].Lectures)).toString().encode('utf-8'))
+	x.write(ical.IcalFile(map(lambda l: iCalFace(l),timetable.Lectures)).toString().encode('utf-8'))
 	x.close()
 # basic unittesting: test all cases
 if None: #__name__ == "__main__":

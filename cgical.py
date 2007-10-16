@@ -20,46 +20,46 @@ import cgitb; cgitb.enable()
 import ical
 import dncalendar
 import MySQLdb
-from swsparser import OnlineTables
+from swsparser import OnlineTables,iCalFace
+import os
+
+def normalize(s):
+	s = s.replace(".","")
+	s = s.replace("%20","")
+	return s.lower()
+
+class icFatSummary(iCalFace):
+	""" put location in summary """
+	def _summary(self,i):
+		return i.title + "@" + i.room[0]
+
 if __name__ == "__main__":
-	id = cgi.FieldStorage().getfirst("id")
+	id = os.environ["REQUEST_URI"].split("?")[0].split('/')[-1:][0]
+	id = normalize(id)
+	if os.environ["REQUEST_URI"].find('@') >0:
+		face = icFatSummary
+	else:
+		face = iCalFace
 	source = OnlineTables()
 	source.UpdateCandidates()
-	wanted = [source.byName(id)]
-	timetable = source.getTables(wanted)
-	if not timetable:
-		print "Content-type: text/html"
-		print 
-		print "ongeldige id: %s" % id
-	else:
-		result = ical.IcalFile(map(lambda x: x.iCalFace(),timetable[0].Lectures)).toString().encode('utf-8')
+	try:
+		timetable = source.getTable(source.byMouth(id))
+		result = ical.IcalFile(map(lambda x: face(x),timetable.Lectures)).toString().encode('utf-8')
+		#statistics
+		if not cgi.FieldStorage().getvalue("dev"):
+			db=MySQLdb.connect(**dict(zip(['user','passwd','db'],open('../../dbcredentials').read().strip().split('.'))))
+			try:
+				c = db.cursor()
+				if not c.execute("""UPDATE stats SET count=count+1 where id=%s;""", db.escape_string(id)):
+					r = c.execute("""INSERT INTO stats (`id`, `count`) VALUES (%s, '1');""" , db.escape_string(id))
+				r = c.execute("""SELECT * FROM stats where id=%s;""" , db.escape_string(id))
+			except Exception, e:
+				pass
+
 		print "Content-type: text/calendar"
 		print 
 		print result 
-		
-#if __name__ == "__main__":
-if None:
-	db=MySQLdb.connect(user="dauser",passwd="dapasswd",db="denagenda")
-	c = db.cursor()
-	id = cgi.FieldStorage().getfirst("id")
-	r = c.execute("UPDATE stats SET count=count+1 where id='%s';" % db.escape_string(id))
-
-	c=	r.fetchone()
-	print "Content-type: text/html"
-	print 
-	print "result: %s" % repr(c)
-	if None:
-		source = OnlineTables()
-		source.UpdateCandidates()
-		wanted = [source.byName(id)]
-		timetable = source.getTables(wanted)
-		if not timetable:
-			print "Content-type: text/html"
-			print 
-			print "ongeldige id: %s" % id
-		else:
-			result = ical.IcalFile(map(lambda x: x.iCalFace(),timetable[0].Lectures)).toString().encode('utf-8')
-			print "Content-type: text/calendar"
-			print 
-			print result 
-		
+	except Exception,e:
+		print "Content-type: text/html"
+		print 
+		print "<html><body><h1>ongeldige id: %s</h1></body></html>" % id
