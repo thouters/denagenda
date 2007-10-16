@@ -1,0 +1,4 @@
+Order Allow,Deny
+Allow From All
+Options +ExecCGI
+AddHandler cgi-script .cgi .py
