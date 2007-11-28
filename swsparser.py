@@ -38,6 +38,9 @@ class FreshLectureTable:
 		""" Iterate over Lectures """
 		return iter(self.Lectures)
 
+	def __repr__(self):
+		return "Timetable of \'%s\', dept \'%s\'" % (self.name,self.department)
+
 	class Lecture:
 		""" Helper class """
 		def __init__(self,reldata,timedata):
@@ -46,12 +49,12 @@ class FreshLectureTable:
 				setattr(self,n,i)
 		def __repr__(self):
 			s = '< %s \'%s\'\n' % (self.__class__.__name__,self.title)
-			s += 't= %s at %s for %s minutes\n' % \
-				(dncalendar.nlwd[self.weekday], repr(self.start),
+			s += "t= %s at %s for %s minutes\n" % \
+				(nlwd[self.weekday], repr(self.start),
 				repr(self.duration))
-			s += 'Students: %s \n' % repr(self.student)
-			s += 'Staff: %s \n' % repr(self.staff)
-			s += 'Rooms: %s \n' % repr(self.room)
+			s += "Students: %s \n" % repr(self.student)
+			s += "Staff: %s \n" % repr(self.staff)
+			s += "Rooms: %s \n" % repr(self.room)
 			return s
 
 	def Parse(self,ttheader):
@@ -200,6 +203,8 @@ class OnlineTables:
 				request = urllib.urlencode({"weeks":"1-13", # FIXME
 											"type": tabletype,	
 											"filter":"(None)",
+											"cbxAvond":"on",
+											"cbxZaterdag":"on",
 											"dept":dept})
 				# add a list of identifiers to the post request
 				request = "&".join([request]+map(lambda t: urllib.urlencode({"identifier[]": t.id}),tables))
@@ -285,15 +290,20 @@ class iCalFace:
 
 
 if __name__ == "__main__":
+#if None:
 	source = OnlineTables()
 	source.UpdateCandidates()
 	#['K103'])#['CRAUWELS Herman'])#['Ma EMEM2'])#['SP1'])#['1PBEIE1'])#,
-	timetable = source.getTable(source.byMouth('sp1'))
+#	for x in iter(source.tables):
+#		print repr(x).decode('utf-8')
+	timetable = source.getTable(source.byMouth('k104'))
 	x = open('/home/thomas/test.ics','w')
 	x.write(ical.IcalFile(map(lambda l: iCalFace(l),timetable.Lectures)).toString().encode('utf-8'))
 	x.close()
+	print "\n".join(map(repr,timetable.Lectures))
 # basic unittesting: test all cases
-if None: #__name__ == "__main__":
+#if None: #__name__ == "__main__":
+if __name__ == "__main__":
 	source = OnlineTables()
 	source.UpdateCandidates()
 	timetables = source.getTables(source.tables)

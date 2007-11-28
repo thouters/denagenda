@@ -70,9 +70,9 @@ END:VEVENT
 			return "<incomplete IcalEvent>"
 		# Convert timestamps to UTC ascii repr 
 		# (thus not having to send along timezone information...)
-		dtstamp = self.dtstamp.strftime("%Y%m%dT%H%M%SZ"),
-		dtstart = self.dtstart.strftime("%Y%m%dT%H%M%S"),
-		dtend   = self.dtend.strftime("%Y%m%dT%H%M%S"),
+		dtstamp = self.dtstamp.strftime("%Y%m%dT%H%M%SZ")
+		dtstart = self.dtstart.strftime("%Y%m%dT%H%M%S")
+		dtend   = self.dtend.strftime("%Y%m%dT%H%M%S")
 		# create new strings with result of retrieval of said attrs.
 		description =	 "%s" % self.description
 		summary =		 "%s" % self.summary
