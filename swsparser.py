@@ -200,7 +200,7 @@ class OnlineTables:
 				if not tables:
 					continue
 				# generic post variables
-				request = urllib.urlencode({"weeks":"1-13", # FIXME
+				request = urllib.urlencode({"weeks":"22-36", # FIXME
 											"type": tabletype,	
 											"filter":"(None)",
 											"cbxAvond":"on",
