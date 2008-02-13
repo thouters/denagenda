@@ -200,7 +200,7 @@ class OnlineTables:
 				if not tables:
 					continue
 				# generic post variables
-				request = urllib.urlencode({"weeks":"22-36", # FIXME
+				request = urllib.urlencode({"weeks":"21-36", # FIXME
 											"type": tabletype,	
 											"filter":"(None)",
 											"cbxAvond":"on",
@@ -296,14 +296,17 @@ if __name__ == "__main__":
 	#['K103'])#['CRAUWELS Herman'])#['Ma EMEM2'])#['SP1'])#['1PBEIE1'])#,
 #	for x in iter(source.tables):
 #		print repr(x).decode('utf-8')
-	timetable = source.getTable(source.byMouth('k104'))
+	timetable = source.getTable(source.byMouth('spe'))
 	x = open('/home/thomas/test.ics','w')
 	x.write(ical.IcalFile(map(lambda l: iCalFace(l),timetable.Lectures)).toString().encode('utf-8'))
 	x.close()
-	print "\n".join(map(repr,timetable.Lectures))
+	#print "\n".join(map(repr,timetable.Lectures))
+	print ical.IcalFile(map(lambda l: iCalFace(l),timetable.Lectures)).toString().encode('utf-8')
+#	print "\n".join(map(repr,timetable.Lectures))
 # basic unittesting: test all cases
 #if None: #__name__ == "__main__":
-if __name__ == "__main__":
+#if __name__ == "__main__":
+if None: 
 	source = OnlineTables()
 	source.UpdateCandidates()
 	timetables = source.getTables(source.tables)
